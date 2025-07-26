@@ -518,7 +518,7 @@ function Update()
         if (_Session.m_AwareV13 == 1) then
             ----------------------------------------------------------------------------------------
             print("AwareV13 ::", _Session.m_AwareV13)
-            BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vscav", "*vscav", GetPositionNear(RecPos, 20.0, 40.0)); -- TODO REMOVE
+            -- BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vscav", "*vscav", GetPositionNear(RecPos, 20.0, 40.0)); -- TODO REMOVE
             ----------------------------------------------------------------------------------------
         end
         ----------------------------------------------------------------------------------------
@@ -574,7 +574,7 @@ function Update()
         -- SIRBRAMBLEY
         SetRaceTeamColor() -- Forces Teamcolors to CPU when player has same race
         IntroShowObjective() -- Setup initial objective stuffs
-        IntroDispatchEnemy() -- TODO ... waiting on fix from JJ for _Session.m_Player; maybe have one goto rec and one goto player
+        IntroDispatchEnemy() -- TODO ... waiting on fix from JJ for _Session.m_Player; have one goto rec and one goto player
         ----------------------------------------------------------------------------------------
 
     end

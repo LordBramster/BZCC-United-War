@@ -12,4 +12,4 @@ References:
 2. https://www.lua.org/docs.html
 
 ]] --
-require("uw_instant_secops")
+require("uw_instant_expd")
