@@ -1,0 +1,36 @@
+[GameObjectClass]
+geometryName = "ibplate00_gh_b.fbx"
+classLabel = "powered"		//"i76building"
+collisionRadius = 1.0
+scrapCost = 20
+scrapValue = 10
+maxHealth = 10000
+maxAmmo = 0
+unitName = "Large Base Plate"
+powerCost = 0
+heatSignature = 2.0
+imageSignature = 1.0
+radarSignature = 1.0
+
+buildSupport = "B"  // N = None, A= Adjacent, B = Base 
+buildRequire = "B"
+
+armorClass = H
+
+requireCount = 0
+
+provideCount = 2
+provideName1 = "ibplate_gh_b"
+provideName2 = "wall"
+
+[BuildingClass]
+//soundAmbient = "silence.wav"
+bldEdge = "tttt"
+
+tunnelCount = 1
+
+tunnel01X0 = 0
+tunnel01Z0 = 0
+tunnel01DX = 0
+tunnel01DZ = 0
+tunnel01Edge = "wwww"
