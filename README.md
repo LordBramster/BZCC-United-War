@@ -28,7 +28,7 @@
     <br>
 </p>
 
-> ***Following the events of BATTLEZONE 2, the UNITED WAR story begins many years after the end of the Human-Scion War. By 2097, the INTERNATIONAL SPACE DEFENSE FORCE was disbanded; an all new peacekeeping force known as the UNITED DEFENSE FORCE, safeguards the new "solar frontier". RACHAEL MANSON (Science Officer), a descendant of a decorated veteran who served in the Human-Scion War, plays a pivotal role in an important discovery within the Elysium System. Elysium, a once abandoned planet during the Biometal-War, emerges as a hub for recent xeno-biology and scientific inquiry in the ever-expanding "solar frontier". Now industrialized by the RESEARCH-DRILLING-AND-SPACE-AUTHORITY, the Elysium System holds the possible key to humanity’s survival: an all new strain of Biometal…***
+> *Following the events of BATTLEZONE II, the UNITED WAR story begins many years after the end of the Human-Scion War. By the late 2090's, the INTERNATIONAL SPACE DEFENSE FORCE (ISDF) has been disbanded; an all new peacekeeping force, known as the UNITED DEFENSE FORCE (UDF), safeguards the expanding SOLAR FRONTIER from looming threats. Science Officer RACHAEL MANSON, a descendant of an infamously-decorated veteran having served in the Human-Scion War, plays a pivotal role in an mysterious discovery within the ELYSIUM System. ELYSIUM, a once abandoned planet following the Biometal-War, emerges as a hub for the latest xeno-biology and scientific research conducted in the furthest reaches of the SOLAR FRONTIER. Now industrialized by the RESEARCH-AND-DEVELOPMENT-SPACE-AUTHORITY (RDSA), the ELYSIUM System holds a potential key to humanity’s next evolution, or threat: an all new strain of Biometal.*
 
 <br>
 
@@ -59,26 +59,27 @@
 <br>
 
 <!-- CONTRIBUTION -->
-| Contributors |  |
+| Contributor | Focus |
 | --- | --- |
-| `F9Bomber` | Scripting/Programming |
-| `JJ173` | Scripting/Programming |
-| `Feign` | Promotional Content |
-| `Jack Forsythe` | Weapons, ODFs |
-
-<!-- SPECIAL THANKS -->
-| Special Thanks | To |
-| --- | --- |
-| `CygnusX-1` | Help with: 3D Modeling, Textures |
-| `Kat` | Help with: 3D Modeling |
-| `BZSphinx` | Help with: 3D Modeling |
-| `BlueBanana` | Help with: Playtesting, Heightmapping |
+| `Jack Forsythe` | Weapons/ODFs |
+| `F9Bomber` | Programming |
+| `JJ173` | Programming |
+| `Feign` | Promotional |
 | `GrizzlyOne95` | Playtesting |
 | `VTrider` | Playtesting |
 | `Lamper` | Playtesting |
 | `HVivify` | Playtesting |
 | `Vacuum34` | Playtesting |
-| `BlackDog` | Playtesting |
+| `BlueBanana` | Playtesting |
+| `GBD` | Resourcefulness |
+| `Nielk1` | Resourcefulness |
+
+<!-- SPECIAL THANKS -->
+| Special Thanks | For |
+| --- | --- |
+| `CygnusX-1` | 3D Art Guidance |
+| `Kat` | 3D Art Guidance |
+| `BZSphinx` | 3D Art Guidance |
 
 <br><br>
 
