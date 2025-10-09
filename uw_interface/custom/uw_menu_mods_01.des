@@ -1,0 +1,6 @@
+To install a mod, first locate your Battlezone: Combat Commander installation directory and open the "addon" folder.
+If the folder doesn’t exist, you can create one yourself.
+Extract the contents of the mod you downloaded into its own subfolder inside the "addon" folder.
+For example, if the mod is called "MyCoolMod", it should go into a folder like "...\addon\MyCoolMod".
+Then, launch the game, go to the Options menu, select Addon Mods, and check the box next to the mod you want to use.
+Restart the game if the game asks you to.
