@@ -28,7 +28,6 @@
     <br>
 </p>
 
-> *Following the events of BATTLEZONE II, the UNITED WAR story begins many years after the end of the Human-Scion War. By the late 2090's, the INTERNATIONAL SPACE DEFENSE FORCE (ISDF) has been disbanded; an all new peacekeeping force, known as the UNITED DEFENSE FORCE (UDF), safeguards the expanding SOLAR FRONTIER from looming threats. Science Officer RACHAEL MANSON, a descendant of an infamously-decorated veteran having served in the Human-Scion War, plays a pivotal role in an mysterious discovery within the ELYSIUM System. ELYSIUM, a once abandoned planet following the Biometal-War, emerges as a hub for the latest xeno-biology and scientific research conducted in the furthest reaches of the SOLAR FRONTIER. Now industrialized by the RESEARCH-AND-DEVELOPMENT-SPACE-AUTHORITY (RDSA), the ELYSIUM System holds a potential key to humanity’s next evolution, or possible annihilation: an all new strain of Biometal.*
 
 <br>
 
