@@ -28,6 +28,15 @@
     <br>
 </p>
 
+> Following the events of BATTLEZONE II, the UNITED WAR story begins many years after the resolution of the HUMAN-SCION WAR:
+>
+> By the late 2090's, the `INTERNATIONAL SPACE DEFENSE FORCE (ISDF)` has been formally disbanded. In its wake is a newly established `UNITED DEFENSE FORCE (UDF)` ... a peacekeeping power tasked with safeguarding the ever-expanding solar frontier from encroaching threats.
+>
+> Years before, following the alchemation of CORE II, the `SCIONs` succumbed to a prolonged clashing of ideals: one covenant devoted to peace, and the other driven by virtuous insurrection. Despite this growing conflict, they made their final attempt to uplift humankind through a joint PEGASUS INITIATIVE; which was unexpectedly met with tragedy. The `SCIONs` had no other choice but to withdraw to their home system once again... and vanish without a trace.
+> 
+> Now, Science Officer RACHAEL MANSON (descendant of the legendary veteran of the Human-Scion War) and Pilot COOPER play a pivotal role in unraveling a new mysterious discovery hidden in the ELYSIUM SYSTEM. On the once-abandoned world of ELYSIUM, left desolate after the BIOMETAL WARS, humanity returned. Now industrialized by the `RESEARCH & DEVELOPMENT SPACE AUTHORITY (RDSA)`, the ELYSIUM SYSTEM thrives as a crucible for new resourcing operations, military outposts, industry, and an acceleration in Xeno-Biology research.
+>
+> Yet beneath the surface, lies a perilous secret - a recently unearthed strain of BIOMETAL that may hold the key to humanity’s next advancement... or its ultimate extinction..
 
 <br>
 
