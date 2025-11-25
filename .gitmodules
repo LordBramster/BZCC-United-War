@@ -1,0 +1,3 @@
+[submodule "uw_scripts/Helpers/API/BZCC-Lua-Function-Sigs"]
+	path = uw_scripts/Helpers/API/BZCC-Lua-Function-Sigs
+	url = https://github.com/BattlezoneScrapField/BZCC-Lua-Function-Sigs
