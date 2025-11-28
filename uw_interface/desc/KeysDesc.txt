@@ -1,0 +1,91 @@
+////// VIEW CONTROLS //////
++shift F1 - view.set.cockpit
++shift F2 - view.set.forward
++shift F3 - view.set.chase
++shift F4 - view.cockpit
++shift F5 - view.interface
++shift F9 - view.set.schematic
++shift F10 - view.set.satellite
++shift F12 - view.set.freeeye
+
+////// UNIT CONTROLS //////
+-shift -ctrl F1 - control.group.toggle1
+-shift -ctrl F2 - control.group.toggle2
+-shift -ctrl F3 - control.group.toggle3
+-shift -ctrl F4 - control.group.toggle4
+-shift -ctrl F5 - control.group.toggle5
+-shift -ctrl F6 - control.group.toggle6
+-shift -ctrl F7 - control.group.toggle7
+-shift -ctrl F8 - control.group.toggle8
+-shift -ctrl F9 - control.group.toggle9
+-shift -ctrl F10 - control.group.toggle10
+-shift +ctrl F1 - control.group.move1
+-shift +ctrl F2 - control.group.move2
+-shift +ctrl F3 - control.group.move3
+-shift +ctrl F4 - control.group.move4
+-shift +ctrl F5 - control.group.move5
+-shift +ctrl F6 - control.group.move6
+-shift +ctrl F7 - control.group.move7
+-shift +ctrl F8 - control.group.move8
+-shift +ctrl F9 - control.group.move9
+-shift +ctrl F10 - control.group.move10
+-shift -ctrl F10 - control.team.toggle1
+-shift -ctrl F9 - control.team.toggle2
+-shift -ctrl F8 - control.team.toggle3
+-shift -ctrl F7 - control.team.toggle4
+-shift +ctrl F10 - control.team.moveto1
+-shift +ctrl F9 - control.team.moveto2
+-shift +ctrl F8 - control.team.moveto3
+-shift +ctrl F7 - control.team.moveto4
+
+////// EDITOR CONTROLS //////
++ctrl E - mission.edit
++ctrl Z - editor.undo
++ctrl Y - editor.redo
+
+////// MULTIPLAYER CONTROLS //////
+-shift -ctrl Enter - network.chatline.activate2
+-shift +ctrl Enter - network.session.togglescores
+
+-ctrl ; - network.chateditline '/chatall';network.chatline.entered
+-ctrl ' - network.chateditline '/chatteam';network.chatline.entered
+
+-shift -ctrl F12 - control.team.toggle1
+-shift -ctrl F12 - control.team.toggle2
+-shift -ctrl F12 - control.team.toggle3
+-shift -ctrl F12 - control.team.toggle4
+-shift -ctrl F11 - control.team.toggle2
+-shift -ctrl F11 - control.team.toggle3
+-shift -ctrl F11 - control.team.toggle4
+
+////// GAME CONTROLS //////
++alt P - mission.pause
+Pause - mission.pause
++alt X - mission.exit
+Escape - mission.escape
+
++ctrl F12 - game.quicksave
++ctrl S - game.save
++ctrl O - game.load
++ctrl T - game.clearobjectives
+
++alt F - vid.framerate
++ctrl R - playback.restart
++ctrl P - playback.stop
++ctrl G - iface.screenshot
+SysRq - iface.screenshot
+
+////// MY BONUS CONTROLS ADDED //////
+Q - game.repeataudio
+
+-shift Q - control.base.set1
+-shift Q - control.command.item7.trigger
+
+-shift F - control.base.set1
+-shift F - control.command.item1.trigger
+
+-shift G - control.base.set1
+-shift G - control.command.item8.trigger
+
+////// NOTE //////
+If you want to add more keys, append them to the "bzgame_keys.cfg".
