@@ -81,6 +81,18 @@ local PATHS = {
     GTOW_6 = 'gtow6'
 }
 
+local IFace = {
+   TEST_OPTION = "script.menu.test",
+   TEST_VEHICLE = "script.menu.vehicleFBX",
+   TEST_MYSIDE = "script.menu.myside",
+
+   DIFFICULTY = "script.menu.difficulty",
+   MYFORCE = "script.menu.myforce",
+   HISFORCE = "script.menu.hisforce",
+
+   LEAVE_MENU = "script.menu.exit"
+}
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------- Utility Functions ---------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -187,7 +199,7 @@ function AddObject(handle)
     local classLabel = GetClassLabel(handle)
 
     if (classLabel == "CLASS_DEPOSIT") then
-        _Session.m_Pools[#_Session.m_Pools + 1] = _Pool:New(handle, GetPosition(handle), GetDistance(handle, PATH_RECYCLER_ENEMY));
+        _Session.m_Pools[#_Session.m_Pools + 1] = _Pool:New(handle, GetPosition(handle), GetDistance(handle, PATHS.RECYCLER_ENEMY));
     end
 end
 
@@ -207,6 +219,15 @@ function Start()
 
     -- Grab the TPS.
     _Session.m_GameTPS = GetTPS()
+
+    IFace_EnterMenuMode()
+    IFace_Exec("bzgame_script_menu.cfg")
+    IFace_Activate("TestPlay")
+    CameraReady()
+    FreeCamera()
+    SetCameraPosition(SetVector(0, 50, 50), SetVector(-90, 15, -20))
+
+    SetInitialConfigVars()
 end
 
 function Update()
@@ -216,163 +237,163 @@ function Update()
     -- Keep track of our turn counter.
     _Session.m_TurnCounter = _Session.m_TurnCounter + 1
 
-    if (_Session.m_StartDone == false) then
-        _Session.m_StartDone = true
+    -- if (_Session.m_StartDone == false) then
+    --     _Session.m_StartDone = true
 
-        _Session.m_MyGoal = GetInstantGoal()
-        _Session.m_CanRespawn = IFace_GetInteger("options.instant.bool0")
-        _Session.m_AwareV13 = IFace_GetInteger("options.instant.awarev13")
+    --     _Session.m_MyGoal = GetInstantGoal()
+    --     _Session.m_CanRespawn = IFace_GetInteger("options.instant.bool0")
+    --     _Session.m_AwareV13 = IFace_GetInteger("options.instant.awarev13")
 
-        -- Set our name for the CPU.
-        SetTauntCPUTeamName("CPU")
+    --     -- Set our name for the CPU.
+    --     SetTauntCPUTeamName("CPU")
 
-        -- Taunt.
-        DoTaunt(TAUNTS_GameStart)
+    --     -- Taunt.
+    --     DoTaunt(TAUNTS_GameStart)
 
-        if (_Session.m_AwareV13 == 1) then
-            _Session.m_CustomAIPStr = IFace_GetString("options.instant.string0")
-            _Session.m_CPUTeamRace = string.char(IFace_GetInteger("options.instant.hisrace"))
-            _Session.m_HumanTeamRace = string.char(IFace_GetInteger("options.instant.myrace"))
-        else
-            _Session.m_MySide = IFace_GetInteger("options.instant.bool2")
+    --     if (_Session.m_AwareV13 == 1) then
+    --         _Session.m_CustomAIPStr = IFace_GetString("options.instant.string0")
+    --         _Session.m_CPUTeamRace = string.char(IFace_GetInteger("options.instant.hisrace"))
+    --         _Session.m_HumanTeamRace = string.char(IFace_GetInteger("options.instant.myrace"))
+    --     else
+    --         _Session.m_MySide = IFace_GetInteger("options.instant.bool2")
 
-            if (_Session.m_MySide == 1) then
-                _Session.m_CPUTeamRace = string.char(RACE_SCION)
-                _Session.m_HumanTeamRace = string.char(RACE_ISDF)
-            else
-                _Session.m_CPUTeamRace = string.char(RACE_ISDF)
-                _Session.m_HumanTeamRace = string.char(RACE_SCION)
-            end
+    --         if (_Session.m_MySide == 1) then
+    --             _Session.m_CPUTeamRace = string.char(RACE_SCION)
+    --             _Session.m_HumanTeamRace = string.char(RACE_ISDF)
+    --         else
+    --             _Session.m_CPUTeamRace = string.char(RACE_ISDF)
+    --             _Session.m_HumanTeamRace = string.char(RACE_SCION)
+    --         end
 
-            ----------------------------------------------------------------------------------------
-            print("MySide: ", GetInstantMySide())
-            print("m_MySide: ", _Session.m_MySide)
-            ----------------------------------------------------------------------------------------
+    --         ----------------------------------------------------------------------------------------
+    --         print("MySide: ", GetInstantMySide())
+    --         print("m_MySide: ", _Session.m_MySide)
+    --         ----------------------------------------------------------------------------------------
 
-            _Session.m_StratTeam = 3
+    --         _Session.m_StratTeam = 3
 
-            Ally(_Session.m_PlayerTeam, _Session.m_StratTeam)
-            Ally(_Session.m_StratTeam, _Session.m_PlayerTeam)
-        end
+    --         Ally(_Session.m_PlayerTeam, _Session.m_StratTeam)
+    --         Ally(_Session.m_StratTeam, _Session.m_PlayerTeam)
+    --     end
 
-        _Session.m_MyForce = GetInstantMyForce()
-        _Session.m_CompForce = GetInstantCompForce()
-        _Session.m_Difficulty = GetInstantDifficulty()
+    --     _Session.m_MyForce = GetInstantMyForce()
+    --     _Session.m_CompForce = GetInstantCompForce()
+    --     _Session.m_Difficulty = GetInstantDifficulty()
 
-        ----------------------------------------------------------------------------------------
-        print("MyForce :: ", _Session.m_MyForce)
-        print("ComForce :: ", _Session.m_CompForce)
-        print("Difficulty :: ", _Session.m_Difficulty)
-        ----------------------------------------------------------------------------------------
+    --     ----------------------------------------------------------------------------------------
+    --     print("MyForce :: ", _Session.m_MyForce)
+    --     print("ComForce :: ", _Session.m_CompForce)
+    --     print("Difficulty :: ", _Session.m_Difficulty)
+    --     ----------------------------------------------------------------------------------------
 
-        local customCPURecycler = IFace_GetString("options.instant.string2")
+    --     local customCPURecycler = IFace_GetString("options.instant.string2")
 
-        if (customCPURecycler ~= nil) then
-            _Session.m_EnemyRecycler = BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, customCPURecycler, "*vrecy", PATHS.RECYCLER_ENEMY)
-        else
-            _Session.m_EnemyRecycler = BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vrecycpu", "*vrecy", PATHS.RECYCLER_ENEMY)
-        end
+    --     if (customCPURecycler ~= nil) then
+    --         _Session.m_EnemyRecycler = BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, customCPURecycler, "*vrecy", PATHS.RECYCLER_ENEMY)
+    --     else
+    --         _Session.m_EnemyRecycler = BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vrecycpu", "*vrecy", PATHS.RECYCLER_ENEMY)
+    --     end
 
-        local RecPos = GetPosition(_Session.m_EnemyRecycler)
+    --     local RecPos = GetPosition(_Session.m_EnemyRecycler)
 
-        ----------------------------------------------------------------------------------------
-        -- Spawn CPU vehicles.
-        ----------------------------------------------------------------------------------------
-        BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vturr", "*vturr", PATHS.TURRET_ENEMY_1)
-        BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vturr", "*vturr", PATHS.TURRET_ENEMY_2)
+    --     ----------------------------------------------------------------------------------------
+    --     -- Spawn CPU vehicles.
+    --     ----------------------------------------------------------------------------------------
+    --     BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vturr", "*vturr", PATHS.TURRET_ENEMY_1)
+    --     BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vturr", "*vturr", PATHS.TURRET_ENEMY_2)
 
-        if (_Session.m_CompForce > 0) then
-            BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vturr", PATHS.GTOW_2)
-            BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vrckt", PATHS.GTOW_3)
-            BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vsent", "*vscout", GetPositionNear(RecPos, 20.0, 40.0))
-            BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 20.0, 40.0))
+    --     if (_Session.m_CompForce > 0) then
+    --         BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vturr", PATHS.GTOW_2)
+    --         BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vrckt", PATHS.GTOW_3)
+    --         BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vsent", "*vscout", GetPositionNear(RecPos, 20.0, 40.0))
+    --         BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 20.0, 40.0))
 
-            if (_Session.m_CompForce > 1) then
-                BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vatank", PATHS.GTOW_4)
-                BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vatank", PATHS.GTOW_5)
-                BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vtank", "*vtank", GetPositionNear(RecPos, 20.0, 40.0))
-                BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vtank", "*vtank", GetPositionNear(RecPos, 20.0, 40.0))
-                BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 20.0, 40.0))
+    --         if (_Session.m_CompForce > 1) then
+    --             BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vatank", PATHS.GTOW_4)
+    --             BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*bspir", "*vatank", PATHS.GTOW_5)
+    --             BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vtank", "*vtank", GetPositionNear(RecPos, 20.0, 40.0))
+    --             BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vtank", "*vtank", GetPositionNear(RecPos, 20.0, 40.0))
+    --             BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 20.0, 40.0))
 
-                if (_Session.m_CompForce > 2) then
-                    BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 20.0, 40.0))
-                    BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 20.0, 40.0))
-                end
-            end
-        end
+    --             if (_Session.m_CompForce > 2) then
+    --                 BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 20.0, 40.0))
+    --                 BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 20.0, 40.0))
+    --             end
+    --         end
+    --     end
 
-        local customHumanRecycler = IFace_GetString("options.instant.string1")
+    --     local customHumanRecycler = IFace_GetString("options.instant.string1")
 
-        if (customHumanRecycler ~= nil) then
-            _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam, _Session.m_HumanTeamRace, customHumanRecycler, "*vrecy", PATHS.RECYCLER)
-        else
-            _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam, _Session.m_HumanTeamRace, "*vrecy", "*vrecy", PATHS.RECYCLER)
-        end
+    --     if (customHumanRecycler ~= nil) then
+    --         _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam, _Session.m_HumanTeamRace, customHumanRecycler, "*vrecy", PATHS.RECYCLER)
+    --     else
+    --         _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam, _Session.m_HumanTeamRace, "*vrecy", "*vrecy", PATHS.RECYCLER)
+    --     end
 
-        RecPos = GetPosition(_Session.m_Recycler)
+    --     RecPos = GetPosition(_Session.m_Recycler)
 
-        ----------------------------------------------------------------------------------------
-        -- SIRBRAMBLEY
-        -- PLAYER FORCE = SMALL
-        -- REMOVED TO MAKE PLAYER STARTING FORCE HAVE NOTHING IF "SMALL" FOR HARDCORE PLAYERS
-        ----------------------------------------------------------------------------------------
+    --     ----------------------------------------------------------------------------------------
+    --     -- SIRBRAMBLEY
+    --     -- PLAYER FORCE = SMALL
+    --     -- REMOVED TO MAKE PLAYER STARTING FORCE HAVE NOTHING IF "SMALL" FOR HARDCORE PLAYERS
+    --     ----------------------------------------------------------------------------------------
 
-        -- PLAYER FORCE = MEDIUM
-        if (_Session.m_MyForce > 0) then
-            BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vturr", "*vturr", GetPositionNear(RecPos, 40.0, 55.0))
-			BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 30.0, 55.0))
-            BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vscav", "*vscav", GetPositionNear(RecPos, 30.0, 45.0))
+    --     -- PLAYER FORCE = MEDIUM
+    --     if (_Session.m_MyForce > 0) then
+    --         BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vturr", "*vturr", GetPositionNear(RecPos, 40.0, 55.0))
+	-- 		BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 30.0, 55.0))
+    --         BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vscav", "*vscav", GetPositionNear(RecPos, 30.0, 45.0))
 
-            -- PLAYER FORCE = LARGE
-            if (_Session.m_MyForce > 1) then
-                BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vturr", "*vturr", GetPositionNear(RecPos, 30.0, 45.0))
-                BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 30.0, 45.0))
+    --         -- PLAYER FORCE = LARGE
+    --         if (_Session.m_MyForce > 1) then
+    --             BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vturr", "*vturr", GetPositionNear(RecPos, 30.0, 45.0))
+    --             BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 30.0, 45.0))
 
-                -- PLAYER FORCE = XLARGE
-                if (_Session.m_MyForce > 2) then
-                    BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vtank", "*vtank", GetPositionNear(RecPos, 30.0, 45.0))
-                    BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 40.0, 55.0))
-                    BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 40.0, 55.0))
-                end
-            end
-        end
+    --             -- PLAYER FORCE = XLARGE
+    --             if (_Session.m_MyForce > 2) then
+    --                 BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vtank", "*vtank", GetPositionNear(RecPos, 30.0, 45.0))
+    --                 BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 40.0, 55.0))
+    --                 BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vatank", "*vatank", GetPositionNear(RecPos, 40.0, 55.0))
+    --             end
+    --         end
+    --     end
 
-        ----------------------------------------------------------------------------------------
-        -- Handle AIPs
-        ----------------------------------------------------------------------------------------
-        if (_Session.m_AwareV13 == 0) then
-            if (_Session.m_HumanTeamRace == CHAR_RACE_ISDF) then
-                SetAIP("isdfteam.aip", _Session.m_StratTeam)
-            else
-                SetAIP("scionteam.aip", _Session.m_StratTeam)
-            end
-        end
+    --     ----------------------------------------------------------------------------------------
+    --     -- Handle AIPs
+    --     ----------------------------------------------------------------------------------------
+    --     if (_Session.m_AwareV13 == 0) then
+    --         if (_Session.m_HumanTeamRace == CHAR_RACE_ISDF) then
+    --             SetAIP("isdfteam.aip", _Session.m_StratTeam)
+    --         else
+    --             SetAIP("scionteam.aip", _Session.m_StratTeam)
+    --         end
+    --     end
 
-        if (_Session.m_PastAIP0 == false) then
-            SetCPUAIPlan(AIPType0)
-        end
+    --     if (_Session.m_PastAIP0 == false) then
+    --         SetCPUAIPlan(AIPType0)
+    --     end
 
-        ----------------------------------------------------------------------------------------
-        -- Handle Player Spawning
-        ----------------------------------------------------------------------------------------
+    --     ----------------------------------------------------------------------------------------
+    --     -- Handle Player Spawning
+    --     ----------------------------------------------------------------------------------------
 
-        local PlayerH = GetPlayerHandle(_Session.m_PlayerTeam)
-        RemoveObject(PlayerH)
+    --     local PlayerH = GetPlayerHandle(_Session.m_PlayerTeam)
+    --     RemoveObject(PlayerH)
 
-        PlayerH = BuildObject(_Session.m_HumanTeamRace .. "vscout", _Session.m_PlayerTeam, GetPositionNear(RecPos, 10, 50))
-        SetAsUser(PlayerH, _Session.m_PlayerTeam)
-        AddPilotByHandle(PlayerH)
+    --     PlayerH = BuildObject(_Session.m_HumanTeamRace .. "vscout", _Session.m_PlayerTeam, GetPositionNear(RecPos, 10, 50))
+    --     SetAsUser(PlayerH, _Session.m_PlayerTeam)
+    --     AddPilotByHandle(PlayerH)
 
-        SetScrap(_Session.m_CompTeam, 40)
-        SetScrap(_Session.m_StratTeam, 40)
+    --     SetScrap(_Session.m_CompTeam, 40)
+    --     SetScrap(_Session.m_StratTeam, 40)
 
-        ----------------------------------------------------------------------------------------
-        -- SIRBRAMBLEY
-        ----------------------------------------------------------------------------------------
-        SetRaceTeamColor() -- Forces Teamcolors to CPU when player has same race
-        IntroShowObjective() -- Setup initial objective stuffs
-        IntroDispatchEnemy() -- TODO ... waiting on fix from JJ for _Session.m_Player; have one goto rec and one goto player
-    end
+    --     ----------------------------------------------------------------------------------------
+    --     -- SIRBRAMBLEY
+    --     ----------------------------------------------------------------------------------------
+    --     SetRaceTeamColor() -- Forces Teamcolors to CPU when player has same race
+    --     IntroShowObjective() -- Setup initial objective stuffs
+    --     IntroDispatchEnemy() -- TODO ... waiting on fix from JJ for _Session.m_Player; have one goto rec and one goto player
+    -- end
 
     ----------------------------------------------------------------------------------------
     -- SIRBRAMBLEY
@@ -527,4 +548,17 @@ function SetCPUAIPlan(type)
     if (_Session.m_PastAIP0) then
         DoTaunt(TAUNTS_Random)
     end
+end
+
+function SetInitialConfigVars()
+   IFace_SetString(IFace.MYFORCE, ConvertIntForceSize(_Session.m_MyForce))
+   IFace_SetString(IFace.HISFORCE, ConvertIntForceSize(_Session.m_CompForce))
+
+   if (_Session.m_Difficulty == 1) then
+      IFace_Activate("TestDifficultyMedium")
+   elseif (_Session.m_Difficulty == 2) then
+      IFace_Activate("TestDifficultyHard")
+   else
+      IFace_Activate("TestDifficultyEasy")
+   end
 end
