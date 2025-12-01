@@ -81,10 +81,9 @@ local GoalSpawn = {
 local Goal = {}
 
 local IFace = {
-   test_option = "script.menu.test",
-   test_vehicle = "script.menu.vehicle",
-   test_vehicleFBX = "script.menu.vehicleFBX",
-   test_myside = "script.menu.myside",
+   vehicle = "script.menu.vehicle",
+   vehicleFBX = "script.menu.vehicleFBX",
+   myside = "script.menu.myside",
 
    difficulty = "script.menu.difficulty",
    myforce = "script.menu.myforce",

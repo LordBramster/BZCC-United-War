@@ -82,47 +82,105 @@ local PATHS = {
 }
 
 local IFace = {
-   TEST_OPTION = "script.menu.test",
-   TEST_VEHICLE = "script.menu.vehicleFBX",
-   TEST_MYSIDE = "script.menu.myside",
+    MYSIDE = "script.menu.myside",
 
-   DIFFICULTY = "script.menu.difficulty",
-   MYFORCE = "script.menu.myforce",
-   HISFORCE = "script.menu.hisforce",
+    DIFFICULTY = "script.menu.difficulty",
+    MYFORCE = "script.menu.myforce",
+    HISFORCE = "script.menu.hisforce",
 
-   LEAVE_MENU = "script.menu.exit"
+    OBSTRUCTED_POOLS = "script.menu.obstructedpools",
+    SCRAP_FIELDS = "script.menu.scrapfields",
+    BIOMETAL_METEORS = "script.menu.biometalmeteors",
+    ADVANCED_DEPOSIT = "script.menu.advanceddeposit",
+    CAPTURABLE_BUILDINGS = "script.menu.capturablebuildings",
+
+    NEUTRAL_ENEMIES = "script.menu.neutralenemies",
+    MINEFIELDS = "script.menu.minefields",
+    DISTRESS_CALLS = "script.menu.distresscalls",
+
+    VEHICLE = "script.menu.vehicle",
+    PILOT_PRIMARY = "script.menu.pilotprimary",
+    PILOT_EQUIPMENT = "script.menu.pilotequipment",
+    VEHICLE_FBX = "script.menu.vehicleFBX",
+    PILOT_PRIMARY_FBX = "script.menu.pilotPrimaryFBX",
+    PILOT_EQUIPMENT_FBX = "script.menu.pilotEquipmentFBX",
+
+    VEHICLE_CHANGED = "script.menu.vehicleChanged",
+    PRIMARY_WEAPON_CHANGED = "script.menu.pilotPrimaryChanged",
+    EQUIPMENT_CHANGED = "script.menu.pilotEquipmentChanged",
+    FACTION_CHANGED = "script.menu.factionChanged",
+
+    LEAVE_MENU = "script.menu.exit"
 }
 
 local LookupStartVehicle = {
    ["Scout"] = {
-      classnames = {"fvscout", "ivscout"},
-      models = {"fvscout_skel.fbx", "ivscout00.fbx"}
+        classNames = {"fvscout", "ivscout"},
+        models = {"fvscout_skel.fbx", "ivscout00.fbx"}
    },
    ["Recon"] = {
-      classnames = {"fvsent", "ivmbike"},
-      models = {"fvsent_skel.fbx", "ivmbik00.fbx"}
+        classNames = {"fvsent", "ivmbike"},
+        models = {"fvsent_skel.fbx", "ivmbik00.fbx"}
    },
    ["Tank"] = {
-      classnames = {"fvtank", "ivtank"},
-      models = {"fvtank_skel.fbx", "ivtank00.fbx"}
+        classNames = {"fvtank", "ivtank"},
+        models = {"fvtank_skel.fbx", "ivtank00.fbx"}
    },
    ["Missile Tank"] = {
-      classnames = {"fvarch", "ivmisl_dm"},
-      models = {"fvlancer_skel.fbx", "ivmisl00.fbx"}
+        classNames = {"fvarch", "ivmisl_dm"},
+        models = {"fvlancer_skel.fbx", "ivmisl00.fbx"}
    },
    ["Assault Tank"] = {
-      classnames = {"fvatank", "ivatank"},
-      models = {"fvtitan_skel.fbx", "ivatnk00.fbx"}
+        classNames = {"fvatank", "ivatank"},
+        models = {"fvtitan_skel.fbx", "ivatnk00.fbx"}
    },
    ["Walker"] = {
-      classnames = {"fvwalk", "ivwalk"},
-      models = {"fvwalk_skel.fbx", "ivwalk_skel.fbx"}
+        classNames = {"fvwalk", "ivwalk"},
+        models = {"fvwalk_skel.fbx", "ivwalk_skel.fbx"}
    }
 }
 
-local script_menu_vehicle_changed = CalcCRC("script.menu.vehicleChanged")
-IFace_CreateCommand("script.menu.vehicleChanged")
+local LookupPilotPrimaryWeapon = {
+    ["Pulse / Sniper"] = {
+        classNames = {"fgsnip_c", "igsnip_c"},
+        models = {"fwrifl_cockpit_stand_0.12.xsi", "iwrifl_cockpit_skel.fbx"}
+    },
+    ["Bazooka / Rocket"] = {
+        classNames = {"fgbzka_c", "igbzka_c"},
+        models = {"fwbzka_cockpit_stand_0.12.xsi", "igbzka_skel_0.12.xsi"}
+    }, 
+    ["Shotgun"] = {
+        classNames = {"fgbzka_c", "igshot_c"},
+        models = {"fwrifl_cockpit_stand_0.12.xsi", "iwrifl_cockpit_skel.fbx"}
+    }
+}
 
+local LookupPilotEquipment = {
+    ["Jetpack"] = {
+        classNames = {"fgjetp", "igjetp"},
+        models = {"fgjetp00_0.12.xsi", "igjetp00.fbx"}
+    },
+    ["Grenade Launcher"] = {
+        classNames = {"fggren", "iggren"},
+        models = {"fggren00_0.12.xsi", "iggren00.fbx"}
+    },
+    ["Satchel Charge"] = {
+        classNames = {"fgsatc", "igsatc"},
+        models = {"fgsatc00_0.12.xsi", "igsatc00_0.12.xsi"}
+    }
+}
+
+local script_menu_vehicle_changed = CalcCRC(IFace.VEHICLE_CHANGED)
+IFace_CreateCommand(IFace.VEHICLE_CHANGED)
+
+local script_menu_pilot_primary_changed = CalcCRC(IFace.PRIMARY_WEAPON_CHANGED)
+IFace_CreateCommand(IFace.PRIMARY_WEAPON_CHANGED)
+
+local script_menu_pilot_equipment_changed = CalcCRC(IFace.EQUIPMENT_CHANGED)
+IFace_CreateCommand(IFace.EQUIPMENT_CHANGED)
+
+local script_menu_faction_changed = CalcCRC(IFace.FACTION_CHANGED)
+IFace_CreateCommand(IFace.FACTION_CHANGED)
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------- Utility Functions ---------------------------------------------------------
@@ -199,6 +257,100 @@ function IntroBannerEnd()
         IFace_Deactivate("BannerObjectiveNewFade")
         _Session.m_AudioPlaying = false
     end
+end
+
+---@param chosenRace integer
+---@return string
+function GetChosenRaceLiteral(chosenRace)
+    return (chosenRace == 1 and "Scion" or "ISDF")
+end
+
+---@alias PrintMessageSeverity "INFO" | "WARNING" | "ERROR" | "CRITICAL"
+---@param Message string
+---@param Severity PrintMessageSeverity
+function PrintMessage(Message, Severity)
+    print(Severity .. " | " .. Message)
+end
+
+---@param chosenRace integer
+function SwapVehicleModelInMenu(chosenRace)
+    local chosenVehicle = IFace_GetString(IFace.VEHICLE)
+
+    if (chosenVehicle == nil) then
+        PrintMessage("Unable to read IFace value for " .. IFace.VEHICLE, "ERROR")
+        return
+    end
+
+    local vehicleRecord = LookupStartVehicle[chosenVehicle]
+
+    if (vehicleRecord == nil) then
+        PrintMessage("Vehicle Record not found for: " .. chosenVehicle .. " please consult the mission script and fix this!", "ERROR")
+        return
+    end
+
+    local vehicleRecordModel = vehicleRecord.models[chosenRace]
+
+    if (vehicleRecordModel == nil) then
+        PrintMessage("Vehicle Record FBX not found: " .. chosenVehicle .. " for " .. GetChosenRaceLiteral(chosenRace) .. " please consult the mission script and fix this!", "ERROR")
+        return
+    end
+
+    IFace_SetString(IFace.VEHICLE_FBX, vehicleRecordModel)
+    PrintMessage("Setting " .. IFace.VEHICLE_FBX .. " to " .. vehicleRecordModel, "INFO")
+end
+
+---@param chosenRace integer
+function SwapPilotPrimaryModelInMenu(chosenRace)
+    local chosenPrimary = IFace_GetString(IFace.PILOT_PRIMARY)
+
+    if (chosenPrimary == nil) then
+        PrintMessage("Unable to read IFace value for " .. IFace.PILOT_PRIMARY, "ERROR")
+        return
+    end
+
+    local primaryRecord = LookupPilotPrimaryWeapon[chosenPrimary]
+
+    if (primaryRecord == nil) then
+        PrintMessage("Primary Weapon Record not found for: " .. primaryRecord .. " please consult the mission script and fix this!", "ERROR")
+        return
+    end
+
+    local primaryRecordModel = primaryRecord.models[chosenRace]
+
+    if (primaryRecordModel == nil) then
+        PrintMessage("Primary Weapon Record FBX not found: " .. primaryRecordModel .. " for " .. GetChosenRaceLiteral(chosenRace) .. " please consult the mission script and fix this!", "ERROR")
+        return
+    end
+
+    IFace_SetString(IFace.PILOT_PRIMARY_FBX, primaryRecordModel)
+    PrintMessage("Setting " .. IFace.PILOT_PRIMARY_FBX .. " to " .. primaryRecordModel, "INFO")
+end
+
+---@param chosenRace integer
+function SwapPilotEquipmentModelInMenu(chosenRace)
+    local chosenEquipment = IFace_GetString(IFace.PILOT_EQUIPMENT)
+
+    if (chosenEquipment == nil) then
+        PrintMessage("Unable to read IFace value for " .. IFace.PILOT_PRIMARY, "ERROR")
+        return
+    end
+
+    local equipmentRecord = LookupPilotEquipment[chosenEquipment]
+
+    if (equipmentRecord == nil) then
+        PrintMessage("Equipment Record not found for: " .. equipmentRecord .. " please consult the mission script and fix this!", "ERROR")
+        return
+    end
+
+    local equipmentRecordModel = equipmentRecord.models[chosenRace]
+
+    if (equipmentRecordModel == nil) then
+        PrintMessage("Equipment Record FBX not found: " .. equipmentRecordModel .. " for " .. GetChosenRaceLiteral(chosenRace) .. " please consult the mission script and fix this!", "ERROR")
+        return
+    end
+
+    IFace_SetString(IFace.PILOT_EQUIPMENT_FBX, equipmentRecordModel)
+    PrintMessage("Setting " .. IFace.PILOT_EQUIPMENT_FBX .. " to " .. equipmentRecordModel, "INFO")
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -475,10 +627,28 @@ function ObjectSniped(DeadObjectHandle, KillersHandle)
 end
 
 function ProcessCommand(CRC)
-    print(CRC)
+    -- Lua doesn't index at 0, but the race values in the .CFG are (0, 1) so we need to make sure that we + 1 to conform with Lua standards.
+    -- Scion: 0 + 1 = 1
+    -- ISDF: 1 + 1 = 2
 
-    if (CRC == script_menu_vehicle_changed) then
-        print("User has changed their vehicle!")
+    local raceInt = IFace_GetInteger(IFace.MYSIDE)
+
+    PrintMessage("RaceInt: " .. raceInt, "INFO")
+
+    local chosenRace = raceInt + 1
+
+    PrintMessage("ChosenRace: " .. chosenRace, "INFO")
+
+    if (CRC == script_menu_faction_changed) then
+        SwapVehicleModelInMenu(chosenRace)
+        SwapPilotPrimaryModelInMenu(chosenRace)
+        SwapPilotEquipmentModelInMenu(chosenRace)
+    elseif (CRC == script_menu_vehicle_changed) then
+        SwapVehicleModelInMenu(chosenRace)
+    elseif (CRC == script_menu_pilot_primary_changed) then
+        SwapPilotPrimaryModelInMenu(chosenRace)
+    elseif (CRC == script_menu_pilot_equipment_changed) then
+        SwapPilotEquipmentModelInMenu(chosenRace)
     end
 end
 
