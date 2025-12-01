@@ -93,6 +93,37 @@ local IFace = {
    LEAVE_MENU = "script.menu.exit"
 }
 
+local LookupStartVehicle = {
+   ["Scout"] = {
+      classnames = {"fvscout", "ivscout"},
+      models = {"fvscout_skel.fbx", "ivscout00.fbx"}
+   },
+   ["Recon"] = {
+      classnames = {"fvsent", "ivmbike"},
+      models = {"fvsent_skel.fbx", "ivmbik00.fbx"}
+   },
+   ["Tank"] = {
+      classnames = {"fvtank", "ivtank"},
+      models = {"fvtank_skel.fbx", "ivtank00.fbx"}
+   },
+   ["Missile Tank"] = {
+      classnames = {"fvarch", "ivmisl_dm"},
+      models = {"fvlancer_skel.fbx", "ivmisl00.fbx"}
+   },
+   ["Assault Tank"] = {
+      classnames = {"fvatank", "ivatank"},
+      models = {"fvtitan_skel.fbx", "ivatnk00.fbx"}
+   },
+   ["Walker"] = {
+      classnames = {"fvwalk", "ivwalk"},
+      models = {"fvwalk_skel.fbx", "ivwalk_skel.fbx"}
+   }
+}
+
+local script_menu_vehicle_changed = CalcCRC("script.menu.vehicleChanged")
+IFace_CreateCommand("script.menu.vehicleChanged")
+
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------- Utility Functions ---------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -222,12 +253,10 @@ function Start()
 
     IFace_EnterMenuMode()
     IFace_Exec("bzgame_script_menu.cfg")
-    IFace_Activate("TestPlay")
+    IFace_Activate("InstantOptions")
     CameraReady()
     FreeCamera()
-    SetCameraPosition(SetVector(0, 50, 50), SetVector(-90, 15, -20))
-
-    SetInitialConfigVars()
+    SetCameraPosition(SetVector(0, 75, 0), SetVector(-90, 15, -20))
 end
 
 function Update()
@@ -445,6 +474,14 @@ function ObjectSniped(DeadObjectHandle, KillersHandle)
     return DLLHandled
 end
 
+function ProcessCommand(CRC)
+    print(CRC)
+
+    if (CRC == script_menu_vehicle_changed) then
+        print("User has changed their vehicle!")
+    end
+end
+
 ---------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------- Mission Related Logic --------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -548,17 +585,4 @@ function SetCPUAIPlan(type)
     if (_Session.m_PastAIP0) then
         DoTaunt(TAUNTS_Random)
     end
-end
-
-function SetInitialConfigVars()
-   IFace_SetString(IFace.MYFORCE, ConvertIntForceSize(_Session.m_MyForce))
-   IFace_SetString(IFace.HISFORCE, ConvertIntForceSize(_Session.m_CompForce))
-
-   if (_Session.m_Difficulty == 1) then
-      IFace_Activate("TestDifficultyMedium")
-   elseif (_Session.m_Difficulty == 2) then
-      IFace_Activate("TestDifficultyHard")
-   else
-      IFace_Activate("TestDifficultyEasy")
-   end
 end
