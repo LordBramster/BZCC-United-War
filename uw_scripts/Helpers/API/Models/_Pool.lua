@@ -1,6 +1,5 @@
 -- Return this to whatever file calls it.
-Pool =
-{
+Pool = {
     -- Handle for generic use.
     Handle = 0,
 

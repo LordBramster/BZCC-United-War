@@ -19,8 +19,8 @@ assert(load(assert(LoadFile("_requirefix.lua")), "_requirefix.lua"))()
 -- Required Globals.
 require("_GlobalVariables")
 
--- Models
-local _Pool = require("_Pool")
+-- UW Database.
+local _UWDatabase = require("_UWDatabase")
 
 local _Session = {
     -- Throwing this at the top as this is probably the most used / important variable in a script for timers and events.
@@ -61,128 +61,6 @@ local _Session = {
 }
 
 ---------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------ Local Variables -----------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------
-
-local CHAR_RACE_ISDF = 'i'
-local CHAR_RACE_SCION = 'f'
-local CHAR_RACE_HADEAN = 'e'
-
-local PATHS = {
-    RECYCLER = 'Recycler',
-    RECYCLER_ENEMY = 'RecyclerEnemy',
-    TURRET_ENEMY_1 = 'turretEnemy1',
-    TURRET_ENEMY_2 = 'turretEnemy2',
-    GTOW_1 = 'gtow1',
-    GTOW_2 = 'gtow2',
-    GTOW_3 = 'gtow3',
-    GTOW_4 = 'gtow4',
-    GTOW_5 = 'gtow5',
-    GTOW_6 = 'gtow6'
-}
-
-local IFace = {
-    MYSIDE = "script.menu.myside",
-
-    DIFFICULTY = "script.menu.difficulty",
-    MYFORCE = "script.menu.myforce",
-    HISFORCE = "script.menu.hisforce",
-
-    OBSTRUCTED_POOLS = "script.menu.obstructedpools",
-    SCRAP_FIELDS = "script.menu.scrapfields",
-    BIOMETAL_METEORS = "script.menu.biometalmeteors",
-    ADVANCED_DEPOSIT = "script.menu.advanceddeposit",
-    CAPTURABLE_BUILDINGS = "script.menu.capturablebuildings",
-
-    NEUTRAL_ENEMIES = "script.menu.neutralenemies",
-    MINEFIELDS = "script.menu.minefields",
-    DISTRESS_CALLS = "script.menu.distresscalls",
-
-    VEHICLE = "script.menu.vehicle",
-    PILOT_PRIMARY = "script.menu.pilotprimary",
-    PILOT_EQUIPMENT = "script.menu.pilotequipment",
-    VEHICLE_FBX = "script.menu.vehicleFBX",
-    PILOT_PRIMARY_FBX = "script.menu.pilotPrimaryFBX",
-    PILOT_EQUIPMENT_FBX = "script.menu.pilotEquipmentFBX",
-
-    VEHICLE_CHANGED = "script.menu.vehicleChanged",
-    PRIMARY_WEAPON_CHANGED = "script.menu.pilotPrimaryChanged",
-    EQUIPMENT_CHANGED = "script.menu.pilotEquipmentChanged",
-    FACTION_CHANGED = "script.menu.factionChanged",
-
-    LEAVE_MENU = "script.menu.exit"
-}
-
-local LookupStartVehicle = {
-   ["Scout"] = {
-        classNames = {"fvscout", "ivscout"},
-        models = {"fvscout_skel.fbx", "ivscout00.fbx"}
-   },
-   ["Recon"] = {
-        classNames = {"fvsent", "ivmbike"},
-        models = {"fvsent_skel.fbx", "ivmbik00.fbx"}
-   },
-   ["Tank"] = {
-        classNames = {"fvtank", "ivtank"},
-        models = {"fvtank_skel.fbx", "ivtank00.fbx"}
-   },
-   ["Missile Tank"] = {
-        classNames = {"fvarch", "ivmisl_dm"},
-        models = {"fvlancer_skel.fbx", "ivmisl00.fbx"}
-   },
-   ["Assault Tank"] = {
-        classNames = {"fvatank", "ivatank"},
-        models = {"fvtitan_skel.fbx", "ivatnk00.fbx"}
-   },
-   ["Walker"] = {
-        classNames = {"fvwalk", "ivwalk"},
-        models = {"fvwalk_skel.fbx", "ivwalk_skel.fbx"}
-   }
-}
-
-local LookupPilotPrimaryWeapon = {
-    ["Pulse / Sniper"] = {
-        classNames = {"fgsnip_c", "igsnip_c"},
-        models = {"fwrifl_cockpit_stand_0.12.xsi", "iwrifl_cockpit_skel.fbx"}
-    },
-    ["Bazooka / Rocket"] = {
-        classNames = {"fgbzka_c", "igbzka_c"},
-        models = {"fwbzka_cockpit_stand_0.12.xsi", "igbzka_skel_0.12.xsi"}
-    }, 
-    ["Shotgun"] = {
-        classNames = {"fgbzka_c", "igshot_c"},
-        models = {"fwrifl_cockpit_stand_0.12.xsi", "iwrifl_cockpit_skel.fbx"}
-    }
-}
-
-local LookupPilotEquipment = {
-    ["Jetpack"] = {
-        classNames = {"fgjetp", "igjetp"},
-        models = {"fgjetp00_0.12.xsi", "igjetp00.fbx"}
-    },
-    ["Grenade Launcher"] = {
-        classNames = {"fggren", "iggren"},
-        models = {"fggren00_0.12.xsi", "iggren00.fbx"}
-    },
-    ["Satchel Charge"] = {
-        classNames = {"fgsatc", "igsatc"},
-        models = {"fgsatc00_0.12.xsi", "igsatc00_0.12.xsi"}
-    }
-}
-
-local script_menu_vehicle_changed = CalcCRC(IFace.VEHICLE_CHANGED)
-IFace_CreateCommand(IFace.VEHICLE_CHANGED)
-
-local script_menu_pilot_primary_changed = CalcCRC(IFace.PRIMARY_WEAPON_CHANGED)
-IFace_CreateCommand(IFace.PRIMARY_WEAPON_CHANGED)
-
-local script_menu_pilot_equipment_changed = CalcCRC(IFace.EQUIPMENT_CHANGED)
-IFace_CreateCommand(IFace.EQUIPMENT_CHANGED)
-
-local script_menu_faction_changed = CalcCRC(IFace.FACTION_CHANGED)
-IFace_CreateCommand(IFace.FACTION_CHANGED)
-
----------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------- Utility Functions ---------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -204,13 +82,13 @@ function SetRaceTeamColor()
     end
 
     -- Set Teamcolor for CPU based on race
-    if (_Session.m_CPUTeamRace == CHAR_RACE_SCION) then
+    if (_Session.m_CPUTeamRace == FACTIONS.SCION) then
         SetTeamColor(_Session.m_CompTeam, 95, 180, 120) -- Light Green for Scions
-    elseif (_Session.m_CPUTeamRace == CHAR_RACE_HADEAN) then
+    elseif (_Session.m_CPUTeamRace == FACTIONS.HADEAN) then
         SetTeamColor(_Session.m_CompTeam, 130, 75, 200) -- Light Purple for Hadeans
-    elseif (_Session.m_CPUTeamRace == CHAR_RACE_ISDF) then
+    elseif (_Session.m_CPUTeamRace == FACTIONS.ISDF) then
         SetTeamColor(_Session.m_CompTeam, 75, 140, 220) -- Light Blue for ISDF
-    elseif (_Session.m_CPUTeamRace == "j") then
+    elseif (_Session.m_CPUTeamRace == FACTIONS.ISDF_CLASSIC) then
         SetTeamColor(_Session.m_CompTeam, 20, 150, 255) -- Light Blue for ISDF (Classic)
     else
         SetTeamColor(_Session.m_CompTeam, 140, 45, 45)  -- Red for NA
@@ -229,7 +107,7 @@ function IntroShowObjective()
     print("PLAYING :: vo_ia_intro_warn.wav")
 
     -- Present initial VO/objective depending on race & CPU force
-    if (_Session.m_HumanTeamRace == CHAR_RACE_ISDF) then
+    if (_Session.m_HumanTeamRace == FACTIONS.ISDF) then
         AudioMessage("ivrecy04.wav") -- give the rec some love!
 
         if (_Session.m_CompForce >= 2) then
@@ -259,12 +137,6 @@ function IntroBannerEnd()
     end
 end
 
----@param chosenRace integer
----@return string
-function GetChosenRaceLiteral(chosenRace)
-    return (chosenRace == 1 and "Scion" or "ISDF")
-end
-
 ---@alias PrintMessageSeverity "INFO" | "WARNING" | "ERROR" | "CRITICAL"
 ---@param Message string
 ---@param Severity PrintMessageSeverity
@@ -274,83 +146,107 @@ end
 
 ---@param chosenRace integer
 function SwapVehicleModelInMenu(chosenRace)
-    local chosenVehicle = IFace_GetString(IFace.VEHICLE)
+    local chosenVehicle = IFace_GetString(_UWDatabase.IFaceVariables.VEHICLE)
 
     if (chosenVehicle == nil) then
-        PrintMessage("Unable to read IFace value for " .. IFace.VEHICLE, "ERROR")
+        PrintMessage("Unable to read IFace value for " .. _UWDatabase.IFaceVariables.VEHICLE, "ERROR")
         return
     end
 
-    local vehicleRecord = LookupStartVehicle[chosenVehicle]
+    local vehicleRecord = _UWDatabase.Factions[chosenRace].FactionLoadouts[chosenVehicle]
 
     if (vehicleRecord == nil) then
-        PrintMessage("Vehicle Record not found for: " .. chosenVehicle .. " please consult the mission script and fix this!", "ERROR")
+        PrintMessage(
+            "Vehicle Record not found for: " ..
+            _UWDatabase.Factions[chosenRace].Name ..
+            " please consult the mission script and fix this!",
+            "ERROR")
         return
     end
 
-    local vehicleRecordModel = vehicleRecord.models[chosenRace]
+    local vehicleRecordModel = vehicleRecord.Model
 
     if (vehicleRecordModel == nil) then
-        PrintMessage("Vehicle Record FBX not found: " .. chosenVehicle .. " for " .. GetChosenRaceLiteral(chosenRace) .. " please consult the mission script and fix this!", "ERROR")
+        PrintMessage(
+            "Vehicle Record FBX not found for: " ..
+            _UWDatabase.Factions[chosenRace].Name ..
+            " please consult the mission script and fix this!",
+            "ERROR")
         return
     end
 
-    IFace_SetString(IFace.VEHICLE_FBX, vehicleRecordModel)
-    PrintMessage("Setting " .. IFace.VEHICLE_FBX .. " to " .. vehicleRecordModel, "INFO")
+    IFace_SetString(_UWDatabase.IFaceVariables.VEHICLE_FBX, vehicleRecordModel)
+    PrintMessage("Setting " .. _UWDatabase.IFaceVariables.VEHICLE_FBX .. " to " .. vehicleRecordModel, "INFO")
 end
 
 ---@param chosenRace integer
 function SwapPilotPrimaryModelInMenu(chosenRace)
-    local chosenPrimary = IFace_GetString(IFace.PILOT_PRIMARY)
+    local chosenPrimary = IFace_GetString(_UWDatabase.IFaceVariables.PILOT_PRIMARY)
 
     if (chosenPrimary == nil) then
-        PrintMessage("Unable to read IFace value for " .. IFace.PILOT_PRIMARY, "ERROR")
+        PrintMessage("Unable to read IFace value for " .. _UWDatabase.IFaceVariables.PILOT_PRIMARY, "ERROR")
         return
     end
 
-    local primaryRecord = LookupPilotPrimaryWeapon[chosenPrimary]
+    local primaryRecord = _UWDatabase.Factions[chosenRace].FactionLoadouts[chosenPrimary]
 
     if (primaryRecord == nil) then
-        PrintMessage("Primary Weapon Record not found for: " .. primaryRecord .. " please consult the mission script and fix this!", "ERROR")
+        PrintMessage(
+            "Primary Weapon Record not found for: " ..
+            _UWDatabase.Factions[chosenRace].Name ..
+            " please consult the mission script and fix this!",
+            "ERROR")
         return
     end
 
-    local primaryRecordModel = primaryRecord.models[chosenRace]
+    local primaryRecordModel = primaryRecord.Model
 
     if (primaryRecordModel == nil) then
-        PrintMessage("Primary Weapon Record FBX not found: " .. primaryRecordModel .. " for " .. GetChosenRaceLiteral(chosenRace) .. " please consult the mission script and fix this!", "ERROR")
+        PrintMessage(
+            "Primary Weapon Record FBX not found for: " ..
+            _UWDatabase.Factions[chosenRace].Name ..
+            " please consult the mission script and fix this!",
+            "ERROR")
         return
     end
 
-    IFace_SetString(IFace.PILOT_PRIMARY_FBX, primaryRecordModel)
-    PrintMessage("Setting " .. IFace.PILOT_PRIMARY_FBX .. " to " .. primaryRecordModel, "INFO")
+    IFace_SetString(_UWDatabase.IFaceVariables.PILOT_PRIMARY_FBX, primaryRecordModel)
+    PrintMessage("Setting " .. _UWDatabase.IFaceVariables.PILOT_PRIMARY_FBX .. " to " .. primaryRecordModel, "INFO")
 end
 
 ---@param chosenRace integer
 function SwapPilotEquipmentModelInMenu(chosenRace)
-    local chosenEquipment = IFace_GetString(IFace.PILOT_EQUIPMENT)
+    local chosenEquipment = IFace_GetString(_UWDatabase.IFaceVariables.PILOT_EQUIPMENT)
 
     if (chosenEquipment == nil) then
         PrintMessage("Unable to read IFace value for " .. IFace.PILOT_PRIMARY, "ERROR")
         return
     end
 
-    local equipmentRecord = LookupPilotEquipment[chosenEquipment]
+    local equipmentRecord = _UWDatabase.Factions[chosenRace].FactionLoadouts[chosenEquipment]
 
     if (equipmentRecord == nil) then
-        PrintMessage("Equipment Record not found for: " .. equipmentRecord .. " please consult the mission script and fix this!", "ERROR")
+        PrintMessage(
+            "Equipment Record not found for: " ..
+            _UWDatabase.Factions[chosenRace].Name ..
+            " please consult the mission script and fix this!",
+            "ERROR")
         return
     end
 
-    local equipmentRecordModel = equipmentRecord.models[chosenRace]
+    local equipmentRecordModel = equipmentRecord.Model
 
     if (equipmentRecordModel == nil) then
-        PrintMessage("Equipment Record FBX not found: " .. equipmentRecordModel .. " for " .. GetChosenRaceLiteral(chosenRace) .. " please consult the mission script and fix this!", "ERROR")
+        PrintMessage(
+            "Equipment Record FBX not found for: " ..
+            _UWDatabase.Factions[chosenRace].Name ..
+            " please consult the mission script and fix this!",
+            "ERROR")
         return
     end
 
-    IFace_SetString(IFace.PILOT_EQUIPMENT_FBX, equipmentRecordModel)
-    PrintMessage("Setting " .. IFace.PILOT_EQUIPMENT_FBX .. " to " .. equipmentRecordModel, "INFO")
+    IFace_SetString(_UWDatabase.IFaceVariables.PILOT_EQUIPMENT_FBX, equipmentRecordModel)
+    PrintMessage("Setting " .. _UWDatabase.IFaceVariables.PILOT_EQUIPMENT_FBX .. " to " .. equipmentRecordModel, "INFO")
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -358,6 +254,9 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 function InitialSetup()
+    -- Start by initializing the UW Database.
+    _UWDatabase:Initialize()
+
     -- Do not auto group units.
     SetAutoGroupUnits(false)
 
@@ -382,7 +281,8 @@ function AddObject(handle)
     local classLabel = GetClassLabel(handle)
 
     if (classLabel == "CLASS_DEPOSIT") then
-        _Session.m_Pools[#_Session.m_Pools + 1] = _Pool:New(handle, GetPosition(handle), GetDistance(handle, PATHS.RECYCLER_ENEMY));
+        -- _Session.m_Pools[#_Session.m_Pools + 1] = _Pool:New(handle, GetPosition(handle),
+        --     GetDistance(handle, _UWDatabase.Paths.RECYCLER_ENEMY));
     end
 end
 
@@ -522,7 +422,7 @@ function Update()
     --     -- PLAYER FORCE = MEDIUM
     --     if (_Session.m_MyForce > 0) then
     --         BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vturr", "*vturr", GetPositionNear(RecPos, 40.0, 55.0))
-	-- 		BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 30.0, 55.0))
+    -- 		BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vsent", "*vmisl", GetPositionNear(RecPos, 30.0, 55.0))
     --         BuildStartingVehicle(_Session.m_PlayerTeam, _Session.m_HumanTeamRace, "*vscav", "*vscav", GetPositionNear(RecPos, 30.0, 45.0))
 
     --         -- PLAYER FORCE = LARGE
@@ -628,26 +528,21 @@ end
 
 function ProcessCommand(CRC)
     -- Lua doesn't index at 0, but the race values in the .CFG are (0, 1) so we need to make sure that we + 1 to conform with Lua standards.
-    -- Scion: 0 + 1 = 1
-    -- ISDF: 1 + 1 = 2
+    -- ISDF: 0 + 1 = 1
+    -- Scion: 1 + 1 = 2
 
-    local raceInt = IFace_GetInteger(IFace.MYSIDE)
-
-    PrintMessage("RaceInt: " .. raceInt, "INFO")
-
+    local raceInt = IFace_GetInteger(_UWDatabase.IFaceVariables.MYSIDE)
     local chosenRace = raceInt + 1
 
-    PrintMessage("ChosenRace: " .. chosenRace, "INFO")
-
-    if (CRC == script_menu_faction_changed) then
+    if (CRC == _UWDatabase.CRCVariables["script_menu_faction_changed"]) then
         SwapVehicleModelInMenu(chosenRace)
         SwapPilotPrimaryModelInMenu(chosenRace)
         SwapPilotEquipmentModelInMenu(chosenRace)
-    elseif (CRC == script_menu_vehicle_changed) then
+    elseif (CRC == _UWDatabase.CRCVariables["script_menu_vehicle_changed"]) then
         SwapVehicleModelInMenu(chosenRace)
-    elseif (CRC == script_menu_pilot_primary_changed) then
+    elseif (CRC == _UWDatabase.CRCVariables["script_menu_pilot_primary_changed"]) then
         SwapPilotPrimaryModelInMenu(chosenRace)
-    elseif (CRC == script_menu_pilot_equipment_changed) then
+    elseif (CRC == _UWDatabase.CRCVariables["script_menu_pilot_equipment_changed"]) then
         SwapPilotEquipmentModelInMenu(chosenRace)
     end
 end
@@ -747,7 +642,8 @@ function SetCPUAIPlan(type)
 
     -- Fallback to old method if none exists.
     if (DoesFileExist(AIPFile) == false) then
-        AIPFile = AIPString .. _Session.m_CPUTeamRace .. _Session.m_HumanTeamRace .. string.sub(AIPTypeExtensions, type, type)
+        AIPFile = AIPString ..
+            _Session.m_CPUTeamRace .. _Session.m_HumanTeamRace .. string.sub(AIPTypeExtensions, type, type)
     end
 
     SetAIP(AIPFile .. '.aip', _Session.m_CompTeam)
