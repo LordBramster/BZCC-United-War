@@ -128,7 +128,22 @@ function UWDatabase:SeedData()
         ["Satchel Charge"] = _FactionLoadout:New('fgsatc00_0.12.xsi', 'fgsatc')
     })
 
-    UWDatabase.Factions = { ISDF, Scion }
+    local ISDFClassic = _Faction:New(1, 'j', 'ISDF (Classic)', {
+        ["Scout"] = _FactionLoadout:New('ivscout_arsvetus00.xsi', 'jvscout'),
+        ["Recon"] = _FactionLoadout:New('ivmbik_arsvetus00.xsi', 'jvmbike'),
+        ["Tank"] = _FactionLoadout:New('ivtank_arsvetus00.xsi', 'jvtank'),
+        ["Missile Tank"] = _FactionLoadout:New('ivmisl_arsvetus00.xsi', 'jvmisl'),
+        ["Assault Tank"] = _FactionLoadout:New('ivatnk_arsvetus00.xsi', 'jvatank'),
+        ["Walker"] = _FactionLoadout:New('ivwalk_arsvetus_skel.xsi', 'jvwalk'),
+        ["Pulse / Sniper"] = _FactionLoadout:New('iwrifl_cockpit_skel.fbx', 'igsnip_c'),
+        ["Bazooka / Rocket"] = _FactionLoadout:New('igbzka_skel_0.12.xsi', 'igbzka_c'),
+        ["Shotgun"] = _FactionLoadout:New('iwrifl_cockpit_skel.fbx', 'igshot_c'),
+        ["Jetpack"] = _FactionLoadout:New('igjetp00.fbx', 'igjetp'),
+        ["Grenade Launcher"] = _FactionLoadout:New('iggren00.fbx', 'iggren'),
+        ["Satchel Charge"] = _FactionLoadout:New('igsatc00_0.12.xsi', 'igsatc')
+    })
+
+    UWDatabase.Factions = { ISDF, Scion, ISDFClassic }
 end
 
 return UWDatabase
