@@ -79,7 +79,7 @@ function UWDatabase:SeedData()
         FACTION_CHANGED = "script.menu.factionChanged",
         ENEMY_FACTION_CHANGED = "script.menu.EnemyFactionChanged",
 
-        LEAVE_MENU = "script.menu.exit"
+        BEGIN_GAME = "script.menu.beginGame"
     }
 
     UWDatabase.CRCVariables = {
@@ -87,7 +87,8 @@ function UWDatabase:SeedData()
         ["script_menu_pilot_primary_changed"] = CalcCRC(self.IFaceVariables.PRIMARY_WEAPON_CHANGED),
         ["script_menu_pilot_equipment_changed"] = CalcCRC(self.IFaceVariables.EQUIPMENT_CHANGED),
         ["script_menu_faction_changed"] = CalcCRC(self.IFaceVariables.FACTION_CHANGED),
-        ["script_menu_enemy_faction_changed"] = CalcCRC(self.IFaceVariables.ENEMY_FACTION_CHANGED)
+        ["script_menu_enemy_faction_changed"] = CalcCRC(self.IFaceVariables.ENEMY_FACTION_CHANGED),
+        ["script_menu_game_start"] = CalcCRC(self.IFaceVariables.BEGIN_GAME)
     }
 
     -- Unique IFace Commands that we need to set up to match the CRC table.
@@ -96,6 +97,7 @@ function UWDatabase:SeedData()
     IFace_CreateCommand(self.IFaceVariables.EQUIPMENT_CHANGED)
     IFace_CreateCommand(self.IFaceVariables.FACTION_CHANGED)
     IFace_CreateCommand(self.IFaceVariables.ENEMY_FACTION_CHANGED)
+    IFace_CreateCommand(self.IFaceVariables.BEGIN_GAME)
 
     -- Specify factions here that will be used across the mod.
     local ISDF = _Faction:New(1, 'i', 'ISDF', {

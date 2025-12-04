@@ -47,6 +47,7 @@ local _Session = {
     m_EnemyRecycler = nil,
     m_Recycler = nil,
     m_Player = nil,
+    m_PlayerStartVehicle = nil,
 
     m_StartDone = false,
     m_CanRespawn = false,
@@ -175,6 +176,7 @@ function SwapVehicleModelInMenu(chosenRace)
         return
     end
 
+    _Session.m_PlayerStartVehicle = vehicleRecord.ODF
     IFace_SetString(_UWDatabase.IFaceVariables.VEHICLE_FBX, vehicleRecordModel)
     PrintMessage("Setting " .. _UWDatabase.IFaceVariables.VEHICLE_FBX .. " to " .. vehicleRecordModel, "INFO")
 end
@@ -219,7 +221,7 @@ function SwapPilotEquipmentModelInMenu(chosenRace)
     local chosenEquipment = IFace_GetString(_UWDatabase.IFaceVariables.PILOT_EQUIPMENT)
 
     if (chosenEquipment == nil) then
-        PrintMessage("Unable to read IFace value for " .. IFace.PILOT_PRIMARY, "ERROR")
+        PrintMessage("Unable to read IFace value for " .. _UWDatabase.IFace.PILOT_PRIMARY, "ERROR")
         return
     end
 
@@ -303,6 +305,10 @@ function Start()
     -- Grab the TPS.
     _Session.m_GameTPS = GetTPS()
 
+    -- Set the CPU Taunt Name here
+    SetTauntCPUTeamName("CPU")
+
+    -- Enter the menu to set the game up
     IFace_EnterMenuMode()
     IFace_Exec("bzgame_script_menu.cfg")
     IFace_Activate("InstantOptions")
@@ -544,12 +550,45 @@ function ProcessCommand(CRC)
         SwapPilotPrimaryModelInMenu(chosenRace)
     elseif (CRC == _UWDatabase.CRCVariables["script_menu_pilot_equipment_changed"]) then
         SwapPilotEquipmentModelInMenu(chosenRace)
+    elseif (CRC == _UWDatabase.CRCVariables["script_menu_game_start"]) then
+        SetupMission()
     end
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------- Mission Related Logic --------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
+
+function SetupMission()
+    ----------------------------------------------------------------------------------------
+    -- Close the menu and set the camera back to normal
+    ----------------------------------------------------------------------------------------
+    IFace_ExitMenuMode()
+    IFace_Deactivate("InstantOptions")
+    FreeFinish()
+    CameraFinish()
+
+    ----------------------------------------------------------------------------------------
+    -- Handle Player Spawning
+    ----------------------------------------------------------------------------------------
+    local playerHandle = GetPlayerHandle(_Session.m_PlayerTeam)
+    RemoveObject(playerHandle)
+
+    playerHandle = BuildObject(_Session.m_PlayerStartVehicle, _Session.m_PlayerTeam, GetPositionNear(_UWDatabase.Paths.RECYCLER, 10, 50))
+    SetAsUser(playerHandle, _Session.m_PlayerTeam)
+    AddPilotByHandle(playerHandle)
+
+    local chosenIFaceFaction = IFace_GetInteger(_UWDatabase.IFaceVariables.MYSIDE) + 1
+    local customHumanRecycler = IFace_GetString("options.instant.string1")
+
+    if (customHumanRecycler ~= nil) then
+        _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam,  _UWDatabase.Factions[chosenIFaceFaction].Char, customHumanRecycler, "*vrecy", _UWDatabase.Paths.RECYCLER)
+    else
+        _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam,  _UWDatabase.Factions[chosenIFaceFaction].Char, "*vrecy", "*vrecy", _UWDatabase.Paths.RECYCLER)
+    end
+
+    SetScrap(_Session.m_StratTeam, 40)
+end
 
 function RespawnPlayer()
     local recyclerPosition = GetPosition(_Session.m_Recycler)
