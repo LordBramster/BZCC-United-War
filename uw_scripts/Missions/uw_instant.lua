@@ -19,6 +19,8 @@ assert(load(assert(LoadFile("_requirefix.lua")), "_requirefix.lua"))()
 -- Required Globals.
 require("_GlobalVariables")
 
+-- Services
+local _UWService = require("_UWService")
 -- UW Database.
 local _UWDatabase = require("_UWDatabase")
 
@@ -28,10 +30,9 @@ local _Session = {
 
     m_GameTPS = 20,
 
-    m_CPUTeamRace = 0,
-    m_HumanTeamRace = 0,
+    m_CPUTeamRace = '',
+    m_HumanTeamRace = '',
     m_MyGoal = 0,
-    m_AwareV13 = 0,
     m_MyForce = 0,
     m_CompForce = 0,
     m_Difficulty = 0,
@@ -43,6 +44,7 @@ local _Session = {
     -- If 1.2 is enabled, m_StratTeam will be set to 3.
     m_StratTeam = 1,
     m_CompTeam = 6,
+    m_NeutralEnemyTeam = 15,
 
     m_EnemyRecycler = nil,
     m_Recycler = nil,
@@ -53,6 +55,12 @@ local _Session = {
     m_CanRespawn = false,
     m_GameOver = false,
     m_PastAIP0 = false,
+    m_AwareV13 = false,
+
+    -- Specific game options.
+    m_ScrapFieldsEnabled = false,
+    m_MineFieldsEnabled = false,
+    m_NeutralEnemiesEnabled = false,
 
     m_AudioIntro = nil,
     m_AudioPlaying = false,
@@ -65,38 +73,29 @@ local _Session = {
 ----------------------------------------------------------- Utility Functions ---------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
 
+---@param pos integer
+---@param str string
+---@param r string
+---@return string
 function ReplaceCharacter(pos, str, r)
     return str:sub(1, pos - 1) .. r .. str:sub(pos + 1)
+end
+
+---@param Min integer
+---@param Max integer
+function GetRandomInt(Min, Max)
+    local retVal = GetRandomFloat(Min, Max + 1);
+
+    if (retVal > Max) then
+        return Max;
+    end
+
+    return math.floor(retVal);
 end
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------- SIRBRAMBLEY ---------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
-
-function SetRaceTeamColor()
-    print("Player Race: ", _Session.m_HumanTeamRace)
-    print("CPU Race: ", _Session.m_CPUTeamRace)
-
-    if (_Session.m_HumanTeamRace ~= _Session.m_CPUTeamRace) then
-        print("TEAMCOLOR :: DEFAULT")
-        return
-    end
-
-    -- Set Teamcolor for CPU based on race
-    if (_Session.m_CPUTeamRace == FACTIONS.SCION) then
-        SetTeamColor(_Session.m_CompTeam, 95, 180, 120) -- Light Green for Scions
-    elseif (_Session.m_CPUTeamRace == FACTIONS.HADEAN) then
-        SetTeamColor(_Session.m_CompTeam, 130, 75, 200) -- Light Purple for Hadeans
-    elseif (_Session.m_CPUTeamRace == FACTIONS.ISDF) then
-        SetTeamColor(_Session.m_CompTeam, 75, 140, 220) -- Light Blue for ISDF
-    elseif (_Session.m_CPUTeamRace == FACTIONS.ISDF_CLASSIC) then
-        SetTeamColor(_Session.m_CompTeam, 20, 150, 255) -- Light Blue for ISDF (Classic)
-    else
-        SetTeamColor(_Session.m_CompTeam, 140, 45, 45)  -- Red for NA
-    end
-
-    print("TEAMCOLOR :: CPU SET")
-end
 
 function IntroShowObjective()
     SetColorFade(2, 0.75, Make_RGBA(0, 0, 0, 255))
@@ -145,8 +144,8 @@ function PrintMessage(Message, Severity)
     print(Severity .. " | " .. Message)
 end
 
----@param chosenRace integer
-function SwapVehicleModelInMenu(chosenRace)
+---@param playerFaction Faction
+function SwapVehicleModelInMenu(playerFaction)
     local chosenVehicle = IFace_GetString(_UWDatabase.IFaceVariables.VEHICLE)
 
     if (chosenVehicle == nil) then
@@ -154,12 +153,12 @@ function SwapVehicleModelInMenu(chosenRace)
         return
     end
 
-    local vehicleRecord = _UWDatabase.Factions[chosenRace].FactionLoadouts[chosenVehicle]
+    local vehicleRecord = playerFaction.FactionLoadouts[chosenVehicle]
 
     if (vehicleRecord == nil) then
         PrintMessage(
             "Vehicle Record not found for: " ..
-            _UWDatabase.Factions[chosenRace].Name ..
+            playerFaction.Name ..
             " please consult the mission script and fix this!",
             "ERROR")
         return
@@ -170,7 +169,7 @@ function SwapVehicleModelInMenu(chosenRace)
     if (vehicleRecordModel == nil) then
         PrintMessage(
             "Vehicle Record FBX not found for: " ..
-            _UWDatabase.Factions[chosenRace].Name ..
+            playerFaction.Name ..
             " please consult the mission script and fix this!",
             "ERROR")
         return
@@ -181,8 +180,8 @@ function SwapVehicleModelInMenu(chosenRace)
     PrintMessage("Setting " .. _UWDatabase.IFaceVariables.VEHICLE_FBX .. " to " .. vehicleRecordModel, "INFO")
 end
 
----@param chosenRace integer
-function SwapPilotPrimaryModelInMenu(chosenRace)
+---@param playerFaction Faction
+function SwapPilotPrimaryModelInMenu(playerFaction)
     local chosenPrimary = IFace_GetString(_UWDatabase.IFaceVariables.PILOT_PRIMARY)
 
     if (chosenPrimary == nil) then
@@ -190,12 +189,12 @@ function SwapPilotPrimaryModelInMenu(chosenRace)
         return
     end
 
-    local primaryRecord = _UWDatabase.Factions[chosenRace].FactionLoadouts[chosenPrimary]
+    local primaryRecord = playerFaction.FactionLoadouts[chosenPrimary]
 
     if (primaryRecord == nil) then
         PrintMessage(
             "Primary Weapon Record not found for: " ..
-            _UWDatabase.Factions[chosenRace].Name ..
+            playerFaction.Name ..
             " please consult the mission script and fix this!",
             "ERROR")
         return
@@ -206,7 +205,7 @@ function SwapPilotPrimaryModelInMenu(chosenRace)
     if (primaryRecordModel == nil) then
         PrintMessage(
             "Primary Weapon Record FBX not found for: " ..
-            _UWDatabase.Factions[chosenRace].Name ..
+            playerFaction.Name ..
             " please consult the mission script and fix this!",
             "ERROR")
         return
@@ -216,8 +215,8 @@ function SwapPilotPrimaryModelInMenu(chosenRace)
     PrintMessage("Setting " .. _UWDatabase.IFaceVariables.PILOT_PRIMARY_FBX .. " to " .. primaryRecordModel, "INFO")
 end
 
----@param chosenRace integer
-function SwapPilotEquipmentModelInMenu(chosenRace)
+---@param playerFaction Faction
+function SwapPilotEquipmentModelInMenu(playerFaction)
     local chosenEquipment = IFace_GetString(_UWDatabase.IFaceVariables.PILOT_EQUIPMENT)
 
     if (chosenEquipment == nil) then
@@ -225,12 +224,12 @@ function SwapPilotEquipmentModelInMenu(chosenRace)
         return
     end
 
-    local equipmentRecord = _UWDatabase.Factions[chosenRace].FactionLoadouts[chosenEquipment]
+    local equipmentRecord = playerFaction.FactionLoadouts[chosenEquipment]
 
     if (equipmentRecord == nil) then
         PrintMessage(
             "Equipment Record not found for: " ..
-            _UWDatabase.Factions[chosenRace].Name ..
+            playerFaction.Name ..
             " please consult the mission script and fix this!",
             "ERROR")
         return
@@ -241,7 +240,7 @@ function SwapPilotEquipmentModelInMenu(chosenRace)
     if (equipmentRecordModel == nil) then
         PrintMessage(
             "Equipment Record FBX not found for: " ..
-            _UWDatabase.Factions[chosenRace].Name ..
+            playerFaction.Name ..
             " please consult the mission script and fix this!",
             "ERROR")
         return
@@ -275,27 +274,23 @@ function Save()
     return _Session
 end
 
+---@param Session table
 function Load(Session)
     _Session = Session
 end
 
+---@param handle Handle
 function AddObject(handle)
     local classLabel = GetClassLabel(handle)
 
     if (classLabel == "CLASS_DEPOSIT") then
-        -- _Session.m_Pools[#_Session.m_Pools + 1] = _Pool:New(handle, GetPosition(handle),
-        --     GetDistance(handle, _UWDatabase.Paths.RECYCLER_ENEMY));
+        _UWService:RegisterMapPool(handle)
     end
 end
 
+---@param handle Handle
 function DeleteObject(handle)
-    local ObjClass = GetClassLabel(handle)
 
-    if (GetTeamNum(handle) == _Session.m_CompTeam) then
-        if (ObjClass == "CLASS_ARMORY") then
-            _Session.m_HaveArmory = false
-        end
-    end
 end
 
 function Start()
@@ -533,23 +528,18 @@ function ObjectSniped(DeadObjectHandle, KillersHandle)
 end
 
 function ProcessCommand(CRC)
-    -- Lua doesn't index at 0, but the race values in the .CFG are (0, 1) so we need to make sure that we + 1 to conform with Lua standards.
-    -- ISDF: 0 + 1 = 1
-    -- Scion: 1 + 1 = 2
-
-    local raceInt = IFace_GetInteger(_UWDatabase.IFaceVariables.MYSIDE)
-    local chosenRace = raceInt + 1
+    local playerFaction = _UWService:GetPlayerFaction()
 
     if (CRC == _UWDatabase.CRCVariables["script_menu_faction_changed"]) then
-        SwapVehicleModelInMenu(chosenRace)
-        SwapPilotPrimaryModelInMenu(chosenRace)
-        SwapPilotEquipmentModelInMenu(chosenRace)
+        SwapVehicleModelInMenu(playerFaction)
+        SwapPilotPrimaryModelInMenu(playerFaction)
+        SwapPilotEquipmentModelInMenu(playerFaction)
     elseif (CRC == _UWDatabase.CRCVariables["script_menu_vehicle_changed"]) then
-        SwapVehicleModelInMenu(chosenRace)
+        SwapVehicleModelInMenu(playerFaction)
     elseif (CRC == _UWDatabase.CRCVariables["script_menu_pilot_primary_changed"]) then
-        SwapPilotPrimaryModelInMenu(chosenRace)
+        SwapPilotPrimaryModelInMenu(playerFaction)
     elseif (CRC == _UWDatabase.CRCVariables["script_menu_pilot_equipment_changed"]) then
-        SwapPilotEquipmentModelInMenu(chosenRace)
+        SwapPilotEquipmentModelInMenu(playerFaction)
     elseif (CRC == _UWDatabase.CRCVariables["script_menu_game_start"]) then
         SetupMission()
     end
@@ -569,6 +559,68 @@ function SetupMission()
     CameraFinish()
 
     ----------------------------------------------------------------------------------------
+    -- Set important pre-setup variables.
+    ----------------------------------------------------------------------------------------
+    _Session.m_HumanTeamRace = _UWService:GetPlayerFaction().Char
+    _Session.m_CPUTeamRace = _UWService:GetCPUFaction().Char
+    _Session.m_AwareV13 = IFace_GetInteger(_UWDatabase.IFaceVariables.MODE) > 0
+    _Session.m_ScrapFieldsEnabled = IFace_GetInteger(_UWDatabase.IFaceVariables.SCRAP_FIELDS) > 0
+    _Session.m_NeutralEnemiesEnabled = IFace_GetInteger(_UWDatabase.IFaceVariables.NEUTRAL_ENEMIES) > 0
+    _Session.m_MineFieldsEnabled = IFace_GetInteger(_UWDatabase.IFaceVariables.MINEFIELDS) > 0
+
+    ----------------------------------------------------------------------------------------
+    -- Get map paths to spawn objects based on chosen options.
+    ----------------------------------------------------------------------------------------
+    local mapPaths = GetAiPaths()
+    local scrapFieldPaths = {}
+    local neutralEnemyPaths = {}
+    local mineFieldPaths = {}
+
+    PrintMessage("PROCESSING MAP PATHS", "INFO")
+
+    if (mapPaths ~= nil) then
+        for i = 1, #mapPaths do
+            local path = mapPaths[i]
+
+            -- Check to see if specific paths match.
+            if (_Session.m_MineFieldsEnabled and path:find(_UWDatabase.Paths.MINE_FIELD_SUBSTRING)) then
+                mineFieldPaths[#mineFieldPaths + 1] = path
+            elseif (_Session.m_ScrapFieldsEnabled and path:find(_UWDatabase.Paths.SCRAP_FIELD_SUBSTRING)) then
+                scrapFieldPaths[#scrapFieldPaths + 1] = path
+            elseif (_Session.m_NeutralEnemiesEnabled and path:find(_UWDatabase.Paths.NEUTRAL_ENEMY_SUBSTRING)) then
+                neutralEnemyPaths[#neutralEnemyPaths + 1] = path
+            end
+
+            PrintMessage("PATH: " .. path .. " PROCESSED", "INFO")
+        end
+    end
+
+    PrintMessage("FINISHED PROCESSING MAP PATHS", "INFO")
+
+    ----------------------------------------------------------------------------------------
+    -- Handle 1.2 mode
+    ----------------------------------------------------------------------------------------
+    if (_Session.m_AwareV13) then
+        _Session.m_StratTeam = 3
+
+        if (_Session.m_HumanTeamRace == RACE_ISDF) then
+            _Session.m_CPUTeamRace = RACE_SCION
+            SetAIP("isdfteam.aip", _Session.m_StratTeam)
+        else
+            _Session.m_CPUTeamRace = RACE_ISDF
+            SetAIP("scionteam.aip", _Session.m_StratTeam)
+        end
+
+        Ally(_Session.m_PlayerTeam, _Session.m_StratTeam)
+        Ally(_Session.m_StratTeam, _Session.m_PlayerTeam)
+    end
+
+    ----------------------------------------------------------------------------------------
+    -- Set Team Colours
+    ----------------------------------------------------------------------------------------
+    _UWService:SetCPUTeamColor(_Session.m_CompTeam, _Session.m_HumanTeamRace, _Session.m_CPUTeamRace)
+
+    ----------------------------------------------------------------------------------------
     -- Handle Player Spawning
     ----------------------------------------------------------------------------------------
     local playerHandle = GetPlayerHandle(_Session.m_PlayerTeam)
@@ -578,16 +630,87 @@ function SetupMission()
     SetAsUser(playerHandle, _Session.m_PlayerTeam)
     AddPilotByHandle(playerHandle)
 
-    local chosenIFaceFaction = IFace_GetInteger(_UWDatabase.IFaceVariables.MYSIDE) + 1
     local customHumanRecycler = IFace_GetString("options.instant.string1")
 
     if (customHumanRecycler ~= nil) then
-        _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam,  _UWDatabase.Factions[chosenIFaceFaction].Char, customHumanRecycler, "*vrecy", _UWDatabase.Paths.RECYCLER)
+        _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam,  _Session.m_HumanTeamRace, customHumanRecycler, "*vrecy", _UWDatabase.Paths.RECYCLER)
     else
-        _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam,  _UWDatabase.Factions[chosenIFaceFaction].Char, "*vrecy", "*vrecy", _UWDatabase.Paths.RECYCLER)
+        _Session.m_Recycler = BuildStartingVehicle(_Session.m_StratTeam, _Session.m_HumanTeamRace, "*vrecy", "*vrecy", _UWDatabase.Paths.RECYCLER)
     end
 
     SetScrap(_Session.m_StratTeam, 40)
+
+    ----------------------------------------------------------------------------------------
+    -- Handle CPU Spawning
+    ----------------------------------------------------------------------------------------
+    local customCPURecycler = IFace_GetString("options.instant.string2")
+
+    if (customCPURecycler ~= nil) then
+        _Session.m_EnemyRecycler = BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, customCPURecycler, "*vrecy", _UWDatabase.Paths.RECYCLER_ENEMY)
+    else
+        _Session.m_EnemyRecycler = BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vrecycpu", "*vrecy", _UWDatabase.Paths.RECYCLER_ENEMY)
+    end
+
+    BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vturr", "*vturr", _UWDatabase.Paths.TURRET_ENEMY_1)
+    BuildStartingVehicle(_Session.m_CompTeam, _Session.m_CPUTeamRace, "*vturr", "*vturr", _UWDatabase.Paths.TURRET_ENEMY_2)
+
+    SetScrap(_Session.m_CompTeam, 40)
+    DoTaunt(TAUNTS_GameStart)
+
+    ----------------------------------------------------------------------------------------
+    -- Neutral Enemies (If Enabled)
+    ----------------------------------------------------------------------------------------
+    if (_Session.m_NeutralEnemiesEnabled and #neutralEnemyPaths > 0) then
+        -- Get this value. 1 is "RANDOM", 2 is "ALL". 
+        -- If "RANDOM" is chosen, we will only spawn a fraction of enemies based on the available paths.
+        -- If "FULL" is chosen, we will populate all paths with a "neutral base".
+        local neutralEnemiesOption = IFace_GetInteger(_UWDatabase.IFaceVariables.NEUTRAL_ENEMIES);
+
+        for i = 1, #neutralEnemyPaths do
+            _UWService:CreateNeutralBase(_Session.m_NeutralEnemyTeam, _UWDatabase.Factions[GetRandomInt(1, #_UWDatabase.Factions)], neutralEnemyPaths[i])
+        end
+    end
+
+    ----------------------------------------------------------------------------------------
+    -- Mine Fields (If Enabled)
+    ----------------------------------------------------------------------------------------
+    if (_Session.m_MineFieldsEnabled and #mineFieldPaths > 0) then
+        for i = 1, #mineFieldPaths do
+            local path = mineFieldPaths[i]
+            local randomCount = GetRandomInt(8, 10)
+            local radius = 5
+
+            for j = 1, randomCount do
+                local pos = GetPositionNear(path, radius, radius)
+                BuildObject("proxmine_unlimited", _Session.m_CompTeam, pos)
+                radius = radius + 5
+            end
+        end
+    end
+
+    ----------------------------------------------------------------------------------------
+    -- Scrap Fields (If Enabled)
+    ----------------------------------------------------------------------------------------
+    if (_Session.m_ScrapFieldsEnabled and #scrapFieldPaths > 0) then
+        for i = 1, #scrapFieldPaths do
+            local path = scrapFieldPaths[i]
+            local randomCount = GetRandomInt(5, 10)
+            local radius = 5
+
+            for j = 1, randomCount do
+                local pos = GetPositionNear(path, radius, radius)
+                BuildObject("npscrx", 0, pos)
+                radius = radius + 5
+            end
+        end
+    end
+
+    ----------------------------------------------------------------------------------------
+    -- Handle AIPs
+    ----------------------------------------------------------------------------------------
+    if (_Session.m_PastAIP0 == false) then
+        SetCPUAIPlan(AIPType0)
+    end
 end
 
 function RespawnPlayer()
@@ -676,13 +799,14 @@ function SetCPUAIPlan(type)
         AIPString = StockAIPNameBase
     end
 
+    local typeSubString = string.sub(AIPTypeExtensions, type + 1, type + 1)
+
     -- First pass, try to find an AIP that is designed to use Provides for enemy team, thus it only cares about CPU Race. This makes adding races much easier.
-    AIPFile = AIPString .. _Session.m_CPUTeamRace .. string.sub(AIPTypeExtensions, type, type)
+    AIPFile = AIPString .. _Session.m_CPUTeamRace .. typeSubString
 
     -- Fallback to old method if none exists.
     if (DoesFileExist(AIPFile) == false) then
-        AIPFile = AIPString ..
-            _Session.m_CPUTeamRace .. _Session.m_HumanTeamRace .. string.sub(AIPTypeExtensions, type, type)
+        AIPFile = AIPString .. _Session.m_CPUTeamRace .. _Session.m_HumanTeamRace .. typeSubString
     end
 
     SetAIP(AIPFile .. '.aip', _Session.m_CompTeam)

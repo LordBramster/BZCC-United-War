@@ -4,9 +4,15 @@ local _GlobalVariables = {};
 
 DPID_UNKNOWN = 0xFFFFFFFF
 
+-- Race IDs
+RACE_ISDF_ID = 1
+RACE_SCION_ID = 2
+RACE_ISDFC_ID = 3
+
 -- Race Characters
-RACE_SCION = 102
-RACE_ISDF = 105
+RACE_SCION = 'f'
+RACE_ISDF = 'i'
+RACE_ISDF_C = 'j'
 
 -- AIPs (Lua index starts at 1, so we have to adjust these accordingly.)
 AIPType0 = 0;
@@ -142,22 +148,5 @@ CTRL_ABANDON = bit32.lshift(1, 7)
 CTRL_FIRE = bit32.lshift(1, 8)
 
 MAX_FLOAT = 3.402823466e+38
-
--- UNIQUE TO BZCC_X
-SHAB_ONFOOT = 1;
-SHAB_REPAIR = 2;
-SHAB_OKAY = 3;
-SHAB_TOSCOUT = 4;
-
-HAULER_MOVING = 1;
-HAULER_PICKUP = 2;
-HAULER_RETREAT = 3;
-
--- Used for Subtitles
-SUBTITLE_PANEL_SIZES = {
-    ["SubtitlesPanel"] = 1,
-    ["SubtitlesPanel_Medium"] = 2,
-    ["SubtitlesPanel_Large"] = 3,
-};
 
 return _GlobalVariables;

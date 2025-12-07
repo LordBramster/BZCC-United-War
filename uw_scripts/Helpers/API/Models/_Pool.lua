@@ -1,4 +1,3 @@
--- Return this to whatever file calls it.
 Pool = {
     -- Handle for generic use.
     Handle = 0,
@@ -10,12 +9,17 @@ Pool = {
     DistanceFromCPURecycler = 0,
 }
 
+---@param Handle Handle
+---@param Position Vector
+---@param DistanceFromCPURecycler integer
+---@return Pool
 function Pool:New(Handle, Position, DistanceFromCPURecycler)
-    local o = {}
-
-    o.Handle = Handle or 0
-    o.Position = Position or 0
-    o.DistanceFromCPURecycler = DistanceFromCPURecycler or 0
+    ---@type Pool
+    local o = {
+        Handle = Handle or 0,
+        Position = Position or 0,
+        DistanceFromCPURecycler = DistanceFromCPURecycler or 0
+    }
 
     setmetatable(o, { __index = self })
 

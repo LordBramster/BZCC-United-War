@@ -2,34 +2,26 @@
 -- data manipulation and function execution. We will follow the basic CRUD principles (Create, Read, Update, Delete).
 local _Faction = require("_Faction")
 local _FactionLoadout = require("_FactionLoadout")
-local _Pool = require("_Pool")
 
 UWDatabase = {
+    ---@type Faction[]
     Factions = {},
+
+    ---@type string[]
     Paths = {},
 
+    ---@type string[]
     IFaceVariables = {},
+
+    ---@type integer[]
     CRCVariables = {},
 
+    ---@type Pool[]
     Pools = {}
 }
 
 function UWDatabase:Initialize()
     self:SeedData()
-end
-
--- Adds an object or record to the specified table stored in the "database".
-function UWDatabase:Create(tableName, record)
-    local recordCount = #UWDatabase[tableName]
-    UWDatabase[tableName][recordCount + 1] = record
-end
-
-function UWDatabase:Update(tableName, record)
-    -- TODO: Implement this if needed.
-end
-
-function UWDatabase:Delete(tableName, record)
-    -- TODO: Implement this if needed.
 end
 
 function UWDatabase:SeedData()
@@ -45,7 +37,10 @@ function UWDatabase:SeedData()
         GTOW_3 = 'gtow3',
         GTOW_4 = 'gtow4',
         GTOW_5 = 'gtow5',
-        GTOW_6 = 'gtow6'
+        GTOW_6 = 'gtow6',
+        MINE_FIELD_SUBSTRING = 'minefield_',
+        NEUTRAL_ENEMY_SUBSTRING = 'neutral_enemy_',
+        SCRAP_FIELD_SUBSTRING = 'scrapfield_'
     }
 
     UWDatabase.IFaceVariables = {
@@ -55,6 +50,7 @@ function UWDatabase:SeedData()
         DIFFICULTY = "script.menu.difficulty",
         MYFORCE = "script.menu.myforce",
         HISFORCE = "script.menu.hisforce",
+        MODE = "script.menu.mode",
 
         OBSTRUCTED_POOLS = "script.menu.obstructedpools",
         SCRAP_FIELDS = "script.menu.scrapfields",
@@ -100,7 +96,7 @@ function UWDatabase:SeedData()
     IFace_CreateCommand(self.IFaceVariables.BEGIN_GAME)
 
     -- Specify factions here that will be used across the mod.
-    local ISDF = _Faction:New(1, 'i', 'ISDF', {
+    local ISDF = _Faction:New(RACE_ISDF_ID, RACE_ISDF, 'ISDF', {
         ["Scout"] = _FactionLoadout:New('ivscout00.fbx', 'ivscout'),
         ["Recon"] = _FactionLoadout:New('ivmbik00.fbx', 'ivmbike'),
         ["Tank"] = _FactionLoadout:New('ivtank00.fbx', 'ivtank'),
@@ -115,7 +111,7 @@ function UWDatabase:SeedData()
         ["Satchel Charge"] = _FactionLoadout:New('igsatc00_0.12.xsi', 'igsatc')
     })
 
-    local Scion = _Faction:New(2, 'f', 'Scion', {
+    local Scion = _Faction:New(RACE_SCION_ID, RACE_SCION, 'Scion', {
         ["Scout"] = _FactionLoadout:New('fvscout_skel.fbx', 'fvscout'),
         ["Recon"] = _FactionLoadout:New('fvsent_skel.fbx', 'fvsent'),
         ["Tank"] = _FactionLoadout:New('fvtank_skel.fbx', 'fvtank'),
@@ -130,7 +126,7 @@ function UWDatabase:SeedData()
         ["Satchel Charge"] = _FactionLoadout:New('fgsatc00_0.12.xsi', 'fgsatc')
     })
 
-    local ISDFClassic = _Faction:New(1, 'j', 'ISDF (Classic)', {
+    local ISDFClassic = _Faction:New(RACE_ISDFC_ID, RACE_ISDF_C, 'ISDF (Classic)', {
         ["Scout"] = _FactionLoadout:New('ivscout_arsvetus00.xsi', 'jvscout'),
         ["Recon"] = _FactionLoadout:New('ivmbik_arsvetus00.xsi', 'jvmbike'),
         ["Tank"] = _FactionLoadout:New('ivtank_arsvetus00.xsi', 'jvtank'),

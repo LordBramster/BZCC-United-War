@@ -13,16 +13,19 @@ Faction = {
     FactionLoadouts = {}
 }
 
+---@param ID integer
 ---@param Char string
 ---@param Name string
 ---@param FactionLoadouts table
+---@return Faction
 function Faction:New(ID, Char, Name, FactionLoadouts)
-    local o = {}
-
-    o.ID = ID or 0
-    o.Char = Char or 0
-    o.Name = Name or 0
-    o.FactionLoadouts = FactionLoadouts or 0
+    ---@type Faction
+    local o = {
+        ID = ID or 0,
+        Char = Char or 0,
+        Name = Name or 0,
+        FactionLoadouts = FactionLoadouts or 0
+    }
 
     setmetatable(o, { __index = self })
 
