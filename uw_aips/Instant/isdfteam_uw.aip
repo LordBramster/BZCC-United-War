@@ -1,0 +1,129 @@
+[Start]
+scrapCount = 40
+scavClass = "ivscav"
+consClass = "ivcons"
+
+[Match]
+targetType1= "fvscout"
+attackType1_1 = "ivscout"
+attackType1_2 = "ivscout"
+
+[Plan1]
+planType = "Deployer"
+planPriority = 1000
+buildLoc = "Recycler"
+DeployClass = "ivrecy"
+
+[Plan2]
+planType = "CollectPool"
+planPriority = 200
+buildIfNoIdle = 1
+
+[Plan3]
+planType = "CollectPool"
+planPriority = 195
+buildIfNoIdle = 1
+
+[Plan4]
+planType = "CollectField"
+planPriority = 190
+buildIfNoIdle = 1
+
+[Plan5]
+planType = "BuildMinimums"
+planPriority = 185
+buildType1 = "apserv"
+buildCount1 = 1
+buildIfNoIdle = 1
+planCondition = "Lua"
+LuaFunction = "ServicePodCondition"
+
+[Plan6]
+planType = "BuildLoop"
+planPriority = 180
+buildType1 = "ivscout"
+buildCount1 = 1
+maxLoops = 2
+
+[Plan7]
+planType = "CollectField"
+planPriority = 175
+buildIfNoIdle = 1 
+
+[Plan8]
+planType = "BuildMinimums"
+planPriority = 170
+buildType1 = "ivcons"
+buildCount1 = 1
+
+[Plan9]
+planType = "BaseBuildMinimums"
+planPriority = 165
+buildType1 = "ibpgen"
+buildType2 = "ibfact"
+
+[Plan10]
+planType = "BuildLoop"
+planPriority = 160
+buildType1 = "ivmisl"
+maxLoops = 3
+
+[Plan11]
+planType = "CollectPool"
+planPriority = 155
+buildIfNoIdle = 1
+
+[Plan12]
+planType = "BaseBuildMinimums"
+planPriority = 150
+buildType1 = "ibpgen"
+buildCount1 = 2
+buildType2 = "ibcbun"
+buildCount2 = 1
+buildType3 = "ibgtow"
+buildCount3 = 1
+
+[Plan13]
+planType = "BuildLoop"
+planPriority = 145
+buildType1 = "ivtank"
+maxLoops = 4
+
+[Plan14]
+planType = "BaseBuildMinimums"
+planPriority = 140
+buildType1 = "ibsbay"
+buildCount1 = 1
+
+[Plan15]
+planType = "BuildLoop"
+planPriority = 135
+buildType1 = "ivatank"
+buildCount1 = 2
+buildType2 = "ivserv"
+buildCount2 = 1
+maxLoops = 2
+
+[Plan16]
+planType = "BuildLoop"
+planPriority = 130
+buildType1 = "ivtank"
+buildCount1 = 2
+buildType2 = "ivscout"
+buildCount2 = 1
+maxLoops = 1
+
+[Plan17]
+planType = "BaseBuildMinimums"
+planPriority = 125
+buildType1 = "ibarmo"
+buildCount1 = 1
+
+[Plan18]
+planType = "BuildLoop"
+planPriority = 120
+buildType1 = "ivrckt"
+buildCount1 = 2
+buildType2 = "ivatank"
+buildCount2 = 2
+maxLoops = 3

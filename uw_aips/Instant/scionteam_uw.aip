@@ -1,0 +1,102 @@
+[Start]
+scrapCount = 40
+scavClass = "fvscav"
+consClass = "fvcons"
+
+[Match]
+targetType1 = "ivscout"
+attackType1_1 = "fvscout"
+attackType1_2 = "fvscout"
+
+[Plan1]
+planType = "Deployer"
+planPriority = 1000
+buildLoc = "Recycler"
+DeployClass = "fvrecy"
+
+[Plan2]
+planType = "CollectPool"
+planPriority = 200
+buildIfNoIdle = 1
+
+[Plan3]
+planType = "CollectPool"
+planPriority = 195
+buildIfNoIdle = 1
+
+[Plan4]
+planType = "CollectField"
+planPriority = 190
+buildIfNoIdle = 1
+
+[Plan5]
+planType = "BuildMinimums"
+planPriority = 185
+buildType1 = "apserv"
+buildCount1 = 1
+planCondition = "Lua"
+LuaFunction = "ServicePodCondition"
+
+[Plan6] 
+planType = "BuildLoop"
+planPriority = 180
+buildType1 = "fvscout"
+buildCount1 = 1
+maxLoops = 2
+loopDelay = 60
+
+[Plan7]
+planType = "BuildMinimums"
+planPriority = 175
+buildType1 = "fvcons"
+buildCount1 = 1
+
+[Plan8]
+planCondition = "NotExists"
+planConditionClass = "fbforg"
+planConditionCount = 1
+planType = "BaseBuildMinimums"
+planPriority = 170
+buildType1 = "fbkiln"
+
+[Plan9]
+planType = "BuildLoop"
+planPriority = 165
+buildType1 = "fvsent"
+maxLoops = 3
+
+[Plan10]
+planType = "CollectPool"
+planPriority = 160
+buildIfNoIdle = 1
+
+[Plan11]
+planCondition = "NotExists"
+planConditionClass = "fbforg"
+planConditionCount = 1
+planType = "Upgrade"
+planPriority = 155
+unitType = "fbkiln"
+
+[Plan12]
+planType = "BuildLoop"
+planPriority = 150
+buildType1 = "fvtank"
+maxLoops = 3
+
+[Plan13]
+planType = "BaseBuildMinimums"
+planPriority = 140
+buildType1 = "fbdowe"
+buildType2 = "fbstro"
+
+[Plan14]
+planType = "BuildLoop"
+planPriority = 135
+buildType1 = "fvwalk"
+buildCount1 = 3
+buildType2 = "fvsent"
+buildCount2 = 1
+buildType3 = "fvserv"
+buildCount3 = 1
+maxLoops = 5

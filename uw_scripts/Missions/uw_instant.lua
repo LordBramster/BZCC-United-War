@@ -279,12 +279,25 @@ function Load(Session)
     _Session = Session
 end
 
----@param handle Handle
-function AddObject(handle)
-    local classLabel = GetClassLabel(handle)
+---@param Handle Handle
+function AddObject(Handle)
+    local classLabel = GetClassLabel(Handle)
+    local team = GetTeamNum(Handle)
 
     if (classLabel == "CLASS_DEPOSIT") then
-        _UWService:RegisterMapPool(handle)
+        _UWService:RegisterMapPool(Handle)
+        return
+    end
+
+    if (team == _Session.m_StratTeam) then
+        if (_Session.m_AwareV13 == false) then
+            if (classLabel == "CLASS_HOVER" or classLabel == "CLASS_WINGMAN"
+                or classLabel == "CLASS_MORPHTANK" or classLabel == "CLASS_ASSAULTTANK"
+                or classLabel == "CLASS_SERVICE"or classLabel == "CLASS_WALKER") then
+                SetTeamNum(Handle, _Session.m_PlayerTeam)
+                SetBestGroup(Handle)
+            end
+        end
     end
 end
 
@@ -600,15 +613,15 @@ function SetupMission()
     ----------------------------------------------------------------------------------------
     -- Handle 1.2 mode
     ----------------------------------------------------------------------------------------
-    if (_Session.m_AwareV13) then
+    if (_Session.m_AwareV13 == false) then
         _Session.m_StratTeam = 3
 
         if (_Session.m_HumanTeamRace == RACE_ISDF) then
             _Session.m_CPUTeamRace = RACE_SCION
-            SetAIP("isdfteam.aip", _Session.m_StratTeam)
+            SetAIP("isdfteam_uw.aip", _Session.m_StratTeam)
         else
             _Session.m_CPUTeamRace = RACE_ISDF
-            SetAIP("scionteam.aip", _Session.m_StratTeam)
+            SetAIP("scionteam_uw.aip", _Session.m_StratTeam)
         end
 
         Ally(_Session.m_PlayerTeam, _Session.m_StratTeam)
